@@ -1,0 +1,64 @@
+﻿<Window 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Class="TimeJob.MainWindow"
+        mc:Ignorable="d"
+        Title="ITWORKS® JobTime Record" 
+        MinHeight="450" MinWidth="800" Height="450" Width="800" Icon="icon.ico" WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow" UseLayoutRounding="True" >
+  <Window.Effect>
+    <DropShadowEffect ShadowDepth="8" Direction="320" Opacity="0.575"/>
+  </Window.Effect>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Row="0">
+      <Menu DockPanel.Dock="Top" Background="AliceBlue">
+        <MenuItem Header="_File" >
+          <MenuItem Header="_Configure" Click="MenuItem_Click">
+            <MenuItem.Icon>
+              <Image Source="Images/timerconfig.ico"/>
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="_Close" Click="MenuItem_Click_1">
+            <MenuItem.Icon>
+              <Image Source="Images/close.png"></Image>
+            </MenuItem.Icon>
+          </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Alarm" >
+          <MenuItem Header="_Reset"/>
+          <MenuItem Header="_Deactivate"/>
+        </MenuItem>
+        <MenuItem Header="_Help" >
+          <MenuItem Header="_Language"/>
+          <MenuItem Header="_About"/>
+        </MenuItem>
+      </Menu>
+    </DockPanel>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <Grid Grid.Column="0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+      </Grid>
+      <DataGrid Grid.Column="1" Height="Auto" Margin="5" Width="Auto" ItemsSource="{Binding Data}" />
+    </Grid>
+  </Grid>
+</Window>
