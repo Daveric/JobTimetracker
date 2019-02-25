@@ -4,7 +4,7 @@
 winexe
 C#
 .cs
-C:\Users\Erick Maldonado\source\repos\TimeJob\TimeJob\obj\Debug\
+C:\Users\Erick Maldonado\Source\Repos\Timer-Job-Tracker\TimeJob\obj\Debug\
 TimeJob
 none
 false
@@ -13,7 +13,7 @@ DEBUG;TRACE
 31035807247
 
 111035291288
-271944660694
+26705197997
 App.xaml;MainWindow.xaml;TimerConfig.xaml;
 
 True
