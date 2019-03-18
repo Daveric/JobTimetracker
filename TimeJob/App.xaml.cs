@@ -26,18 +26,20 @@ namespace TimeJob
     }
 
     #region ISingleInstanceApp Members
+
     public bool SignalExternalCommandLineArgs(IList<string> args)
     {
       // Bring window to foreground
       if (this.MainWindow.WindowState == WindowState.Minimized)
       {
-        this.MainWindow.WindowState = WindowState.Normal;
+        MainWindow.WindowState = WindowState.Normal;
       }
 
-      this.MainWindow.Activate();
+      MainWindow.Activate();
 
       return true;
     }
-    #endregion
+
+    #endregion ISingleInstanceApp Members
   }
 }
