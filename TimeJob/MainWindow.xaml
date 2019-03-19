@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-        xmlns:mvc="clr-namespace:DevExpress.Web.Mvc;assembly=DevExpress.Web.Mvc5.v17.2"
         x:Class="TimeJob.MainWindow" x:Name="JobTime"
         mc:Ignorable="d"
         Title="ITWORKS® JobTime Record" FontSize="13"
@@ -111,7 +110,7 @@
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <GroupBox Grid.Row="0" Grid.Column="0" Header="Working Hours per Week" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10">
-            <dxe:SpinEdit Name="WorkingHours" Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingHoursPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
+            <dxe:SpinEdit Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingHoursPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
                         HorizontalAlignment="Center" Margin="5" VerticalAlignment="Top" Width="60" Height="25" FontSize="14" IsFloatValue="False" />
             </GroupBox>
             <Label Grid.Row="1" Grid.Column="0" Content="Lunch Break" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
