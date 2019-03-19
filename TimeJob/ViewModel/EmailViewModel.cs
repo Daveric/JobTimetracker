@@ -20,7 +20,7 @@ namespace TimeJob.ViewModel
     [System.Runtime.InteropServices.DllImport("User32.dll")]
     private static extern bool IsIconic(IntPtr handle);
 
-    private static readonly int port = 587;
+    //private static readonly int port = 587;
 
     #endregion Fields
 
