@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="ViewModel\EmailViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\ReadCsv.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
