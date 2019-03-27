@@ -15,6 +15,9 @@
     </Properties>
     <Properties name="Configuration">
       <Property name="WorkingHoursPerWeek"></Property>
+      <Property name="WorkingDaysPerWeek"></Property>
+      <Property name="AlertTime"></Property>
+      <Property name="LunchBreakTime"></Property>
       <Property name="TimeLogFileLocationName"></Property>
       <Property name="TimeLogging">1</Property>
       <Property name="SoundWarning">1</Property>

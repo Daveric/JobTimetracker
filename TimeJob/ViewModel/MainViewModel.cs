@@ -12,6 +12,7 @@ using System.Linq;
 using Microsoft.Win32;
 using TimeJob.Data;
 using System.DirectoryServices.AccountManagement;
+using System.Threading.Tasks;
 
 namespace TimeJob.ViewModel
 {
@@ -37,33 +38,59 @@ namespace TimeJob.ViewModel
 
     public MainViewModel()
     {
-      StartTimer();
+      DataAccess.LoadConfiguration(this);
       InitGeneralSettings();
 
       CmdCloseWindow = new RelayCommand<Window>(CmdCloseWindowExecute);
       CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
-
-      DataAccess.LoadConfiguration(this);
     }
 
     #endregion Constructor
 
     #region Properties
 
-    private DateTime _starTime;
-    public DateTime StarTime
-    {
-      get => _starTime;
-      set { _starTime = value; RaisePropertyChanged(); }
-    }
+    private DateTime _startTime;
+    private DateTime _timeNow;
+    private DateTime _regularEndTime;
+    private DateTime _maximumEndTime;
+    private TimeSpan _timeToGo;
+    private TimeSpan _timeToGoMaximum;
 
-    private string _timeNow;
+    public DateTime StartTime
+    {
+      get => _startTime;
+      set
+      {
+        _startTime = value;
+        _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(WorkingHoursPerWeek / WorkingDaysPerWeek);
+        _maximumEndTime = _regularEndTime + TimeSpan.FromHours(2);
+        RaisePropertyChanged("RegularEndTime");
+        RaisePropertyChanged("MaximumEndTime");
+      }
+    }
 
     public string TimeNow
     {
-      get => _timeNow;
-      set { _timeNow = value; RaisePropertyChanged(); }
+      get => _timeNow.ToString("HH:mm:ss");
+      set { _timeNow = Convert.ToDateTime(value); RaisePropertyChanged(); }
     }
+
+    public string RegularEndTime => _regularEndTime.ToString("HH:mm:ss");
+    
+    public string MaximumEndTime => _maximumEndTime.ToString("HH:mm:ss");
+
+    public string TimeToGo
+    {
+      get => _timeToGo.ToString(@"hh\:mm\:ss");
+      set { _timeToGo = TimeSpan.Parse(value); RaisePropertyChanged();}
+    }
+
+    public string TimeToGoMaximum
+    {
+      get => _timeToGoMaximum.ToString(@"hh\:mm\:ss");
+      set { _timeToGoMaximum = TimeSpan.Parse(value); RaisePropertyChanged(); }
+    }
+
     private int _workingHoursPerWeek;
     public int WorkingHoursPerWeek
     {
@@ -71,7 +98,14 @@ namespace TimeJob.ViewModel
       set { _workingHoursPerWeek = value; RaisePropertyChanged(); }
     }
 
-    private TimeSpan _timeAlert = TimeSpan.FromMinutes(60);
+    private int _workingDaysPerWeek;
+    public int WorkingDaysPerWeek
+    {
+      get => _workingDaysPerWeek;
+      set { _workingDaysPerWeek = value; RaisePropertyChanged(); }
+    }
+
+    private TimeSpan _timeAlert;
 
     public double MinutesAlert
     {
@@ -79,23 +113,18 @@ namespace TimeJob.ViewModel
       set { _timeAlert = TimeSpan.FromMinutes(value); RaisePropertyChanged("MinutesAlertText");}
     }
 
-    public string MinutesAlertText
-    {
-      get => _timeAlert.ToString(@"hh\:mm");
-    }
+    public string MinutesAlertText => _timeAlert.ToString(@"hh\:mm");
 
-    private TimeSpan _timeLunchBreak = TimeSpan.FromMinutes(45);
+    private TimeSpan _timeLunchBreak;
 
     public double MinutesBreak
     {
       get => _timeLunchBreak.TotalMinutes;
-      set { _timeLunchBreak = TimeSpan.FromMinutes(value); RaisePropertyChanged("MinutesBreakText");}
+      set { _timeLunchBreak = TimeSpan.FromMinutes(value); RaisePropertyChanged("MinutesBreakText");
+      }
     }
 
-    public string MinutesBreakText
-    {
-      get => _timeLunchBreak.ToString(@"hh\:mm");
-    }
+    public string MinutesBreakText => _timeLunchBreak.ToString(@"hh\:mm");
 
     public static string AssemblyDirectory
     {
@@ -309,35 +338,48 @@ namespace TimeJob.ViewModel
 
     private void StartTimer()
     {
-      var timer = new DispatcherTimer
-      {
-        Interval = TimeSpan.FromSeconds(1)
-      };
-      timer.Tick += TickEvent;
+      var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+      timer.Tick += (s, e) => TimeNow = DateTime.Now.ToString("HH:mm:ss");
       timer.Start();
     }
 
-    private void TickEvent(object sender, EventArgs e)
+    private void RemainingTimerToGo()
     {
-      TimeNow = DateTime.Now.ToString(@"hh:mm:ss tt");
+      var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+      timer.Tick += (s,e) => TimeToGo = (_regularEndTime - _timeNow).ToString(@"hh\:mm\:ss"); ;
+      timer.Start();
     }
 
-    public static DateTime? GetLastLoggingToMachine()
+    private void RemainingTimerToGoMaximum()
+    {
+      var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+      timer.Tick += (s, e) => TimeToGoMaximum = (_maximumEndTime - _timeNow).ToString(@"hh\:mm\:ss"); ;
+      timer.Start();
+    }
+
+    public DateTime? GetLastLoggingToMachine()
     {
       var c = new PrincipalContext(ContextType.Machine, Environment.MachineName);
       var uc = UserPrincipal.FindByIdentity(c, Environment.UserName);
       return uc.LastLogon;
     }
+
     private void InitGeneralSettings()
     {
-      _starTime = GetLastLoggingToMachine().Value;
+      WorkingDaysPerWeek = 5;
+      StartTime = GetLastLoggingToMachine().Value;
+      StartTimer();
+      RemainingTimerToGo();
+      RemainingTimerToGoMaximum();
+
+      SoundWarning = true;
+      ChargeSoundFiles();
+
       CmdConfig = new RelayCommand(CmdConfigExecute);
       CmdHideConfig = new RelayCommand(CmdHideConfigExecute);
       CmdAddSounds = new RelayCommand(CmdAddSoundsExecute);
       CmdEditMail= new RelayCommand(CmdEditMailExecute);
       CmdOpenFileLocation = new RelayCommand(CmdOpenFileLocationExecute);
-      SoundWarning = true;
-      ChargeSoundFiles(); 
     }
 
     private void ChargeSoundFiles()
@@ -356,6 +398,11 @@ namespace TimeJob.ViewModel
 
       SelectedAlertSound = SoundsList.ElementAt(0);
       SelectedLunchBreakSound = SoundsList.ElementAt(1);
+    }
+
+    private void ActivateAlarm()
+    {
+
     }
     #endregion Functions
 

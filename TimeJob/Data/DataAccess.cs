@@ -194,6 +194,11 @@ namespace TimeJob.Data
       writer.WriteEndElement();
 
       writer.WriteStartElement("Property");
+      writer.WriteAttributeString("name", Constants.WorkingDaysPerWeek);
+      writer.WriteValue(viewModel.WorkingDaysPerWeek);
+      writer.WriteEndElement();
+
+      writer.WriteStartElement("Property");
       writer.WriteAttributeString("name", Constants.TimeLogFileLocationName);
       writer.WriteString(viewModel.TimeLogFileLocationName);
       writer.WriteEndElement();
@@ -259,6 +264,8 @@ namespace TimeJob.Data
       {
         if (elem.FirstAttribute.Value == Constants.WorkingHoursPerWeek)
           viewModel.WorkingHoursPerWeek = int.Parse(elem.Value);
+        if (elem.FirstAttribute.Value == Constants.WorkingDaysPerWeek)
+          viewModel.WorkingDaysPerWeek = int.Parse(elem.Value);
         if (elem.FirstAttribute.Value == Constants.TimeLogFileLocationName)
           viewModel.TimeLogFileLocationName = elem.Value;
         if (elem.FirstAttribute.Value == Constants.TimeLogging)

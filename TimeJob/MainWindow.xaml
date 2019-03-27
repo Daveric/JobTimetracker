@@ -46,41 +46,64 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="1.5*" />
       </Grid.ColumnDefinitions>
-      <Grid Grid.Column="0">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+      <Grid Grid.Column="0" Margin="10,10,5,0">
         <Grid.RowDefinitions>
-          <RowDefinition Height="*" />
-          <RowDefinition Height="*" />
-          <RowDefinition Height="*" />
-          <RowDefinition Height="*" />
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Grid.Column="1" Content="Time Now:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="0" Content="Start Time:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top"/>
-        <Label Grid.Row="1" Grid.Column="1" Content="Maximum Time:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top"/>
-        <Label Grid.Row="1" Grid.Column="0" Content="Regular Time:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top"/>
-        <Label Grid.Row="2" Grid.Column="1" Content="Time to die:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top"/>
-        <Label Grid.Row="2" Grid.Column="0" Content="Time to go:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top"/>
-        <Label Grid.Row="3" Grid.Column="0" Content="Break Time:" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Height="25"/>
-        <Label Grid.Row="3" Grid.Column="0" Content="{Binding MinutesBreakText, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" 
-               Margin="5,30" VerticalAlignment="Top" Width="90" Height="25"/>
-        <Label Grid.Row="3" Grid.Column="0" Content="Alert Time:" HorizontalAlignment="Left" Margin="5,55,0,0"  VerticalAlignment="Top" Height="25"/>
-        <Label Grid.Row="3" Grid.Column="0" Content="{Binding MinutesAlertText, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" 
-               Margin="5,80,0,0" Width="90" VerticalAlignment="Top" Height="25"/>
-        <Button Grid.Row="3" Grid.Column="1" Width="140" Height="25" Command="{Binding MinimizeToTray}" Content="Minimize to Tray" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,10"/>
-        <dxe:ButtonEdit Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Mask="hh:mm:ss" MaskType="DateTime"
-                    EditValue="{Binding StartTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowDefaultButton="False">
-          <dxe:ButtonEdit.Buttons>
-            <dxe:SpinButtonInfo IsDefaultButton="True"></dxe:SpinButtonInfo>
-          </dxe:ButtonEdit.Buttons>
-        </dxe:ButtonEdit>
-          <Label Grid.Row="0" Grid.Column="1" Margin="5" FontSize="16" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeNow, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding RegularTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Label Grid.Row="1" Grid.Column="1" Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding MaximumTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Label Grid.Row="2" Grid.Column="1" Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGoMaximum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid Grid.Row="0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15" ><Run Text="Break Time:  " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
+          <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15" ><Run Text="Alert Time:  " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
+          <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" Header="Start Time">
+            <dxe:DateEdit Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Mask="HH:mm:ss" MaskUseAsDisplayFormat="True" FontSize="16"
+                          EditValue="{Binding StartTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowDefaultButton="False" AllowSpinOnMouseWheel="True" HorizontalContentAlignment="Center">
+              <dxe:ButtonEdit.Buttons>
+                <dxe:SpinButtonInfo IsDefaultButton="True" ></dxe:SpinButtonInfo>
+              </dxe:ButtonEdit.Buttons>
+            </dxe:DateEdit>
+          </GroupBox>
+          <GroupBox Grid.Row="0" Grid.Column="1" Margin="5" Header="Time Now">
+            <Label Margin="5" FontSize="16" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeNow, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+          </GroupBox>
+          <GroupBox Grid.Row="1" Grid.Column="0" Margin="5" Header="Regular End Time">
+            <Label Margin="5" FontSize="16" Height="25" HorizontalAlignment="Stretch" Content="{Binding RegularEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+          </GroupBox>
+          <GroupBox Grid.Row="1" Grid.Column="1" Margin="5" Header="Maximum End Time">
+            <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding MaximumEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+          </GroupBox>
+          <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" Header="Time To Go">
+            <Label Margin="5" FontSize="16" VerticalAlignment="top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+          </GroupBox>
+          <GroupBox Grid.Row="2" Grid.Column="1" Margin="5" Header="Time To Go Maximum">
+            <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGoMaximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+          </GroupBox>
+        </Grid>
+        <Button Grid.Row="2" Width="140" Height="25" Command="{Binding MinimizeToTray}" Content="Minimize to Tray" HorizontalAlignment="Center" Margin="0,5,0,15"/>
+        <GroupBox Grid.Row="1" Header="Time Logging File" HorizontalAlignment="Stretch" Margin="5">
+          <Grid Margin="2,5">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Height="25" IsReadOnly="True" Text="{Binding TimeLogFileLocationName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Left" Margin="5,0"/>
+            <Button Grid.Column="1" Width="40" Height="25" Command="{Binding CmdOpenFileLocation}" RenderTransformOrigin="1.764,1.713">
+              <StackPanel>
+                <Image Source="Images/OpenFileLocation.png" Height="15" Width="15"></Image>
+              </StackPanel>
+            </Button>
+          </Grid>
+        </GroupBox>
       </Grid>
       <Separator Grid.Row="0" Grid.Column="1" Margin="0" HorizontalAlignment="Left" Background="SteelBlue">
         <Separator.LayoutTransform>
@@ -92,7 +115,7 @@
           <RowDefinition Height="*" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <GroupBox Grid.Row="0" Margin="15,5" FontSize="14" >
+        <GroupBox Grid.Row="0" Margin="10,5" FontSize="14" >
           <GroupBox.Header>
             <StackPanel Orientation="Horizontal">
               <Image Source="Images/timerconfig.png" Height="25" Width="25" Margin="2,0"/>
@@ -101,74 +124,77 @@
           </GroupBox.Header>
           <Grid>
             <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="*" />
-              <RowDefinition Height="*" />
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="*" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <GroupBox Grid.Row="0" Grid.Column="0" Header="Working Hours per Week" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10">
-            <dxe:SpinEdit Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingHoursPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
-                        HorizontalAlignment="Center" Margin="5" VerticalAlignment="Top" Width="60" Height="25" FontSize="14" IsFloatValue="False" />
-            </GroupBox>
-            <Label Grid.Row="1" Grid.Column="0" Content="Lunch Break" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
-            <dxe:TrackBarEdit Name="BreakSlider" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="10">
-              <dxe:TrackBarEdit.StyleSettings>
-                <dxe:TrackBarZoomStyleSettings></dxe:TrackBarZoomStyleSettings>
-              </dxe:TrackBarEdit.StyleSettings>
-            </dxe:TrackBarEdit>
-            <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Break Time: " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
-            <Label Grid.Row="2" Grid.Column="0" Content="Alert" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
-            <dxe:TrackBarEdit Name="AlertSlider" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center" FontSize="20"
-                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesAlert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="10" >
-              <dxe:TrackBarEdit.StyleSettings>
-                <dxe:TrackBarZoomStyleSettings></dxe:TrackBarZoomStyleSettings>
-              </dxe:TrackBarEdit.StyleSettings>
-            </dxe:TrackBarEdit>
-            <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Alert Time: " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
-            <GroupBox Grid.Row="0" Grid.Column="1" Header="Time Logging File" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,10">
-              <Grid Margin="2,5">
+            <GroupBox Grid.Row="0" Header="Working Time" HorizontalAlignment="Stretch">
+              <Grid>
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*"/>
-                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Height="25" IsReadOnly="True" Text="{Binding TimeLogFileLocationName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Left" Margin="5,0"/>
-                <Button Grid.Column="1" Width="40" Height="25" Command="{Binding CmdOpenFileLocation}" RenderTransformOrigin="1.764,1.713">
-                  <StackPanel>
-                    <Image Source="Images/OpenFileLocation.png" Height="15" Width="15"></Image>
-                  </StackPanel>
-                </Button>
+                <Label Grid.Column="0" HorizontalAlignment="Right" Content="Hours Per Week" FontSize="13" />
+                <Label Grid.Column="2" HorizontalAlignment="Right" Content="Days Per Week" FontSize="13" />
+                <dxe:SpinEdit Grid.Column="1" Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingHoursPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
+                              HorizontalAlignment="Center" Margin="5,2" Width="60" Height="25" IsFloatValue="False" />
+                <dxe:SpinEdit Grid.Column="3" Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingDaysPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
+                              HorizontalAlignment="Center" Margin="5,2" Width="60" Height="25" IsFloatValue="False" />
               </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Grid.Column="1" Header="Sound Files" HorizontalAlignment="Stretch">
-              <Grid>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="*"/>
-                  <RowDefinition Height="*"/>
-                  <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <ComboBox Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
+            <Grid Grid.Row="1">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Label Grid.Row="0" Grid.Column="0" Content="Lunch Break" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
+              <dxe:TrackBarEdit Name="BreakSlider" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center"
+                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="10">
+                <dxe:TrackBarEdit.StyleSettings>
+                  <dxe:TrackBarZoomStyleSettings></dxe:TrackBarZoomStyleSettings>
+                </dxe:TrackBarEdit.StyleSettings>
+              </dxe:TrackBarEdit>
+              <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Break Time: " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
+              <Label Grid.Row="1" Grid.Column="0" Content="Alert" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
+              <dxe:TrackBarEdit Name="AlertSlider" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center" FontSize="20"
+                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesAlert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="10" >
+                <dxe:TrackBarEdit.StyleSettings>
+                  <dxe:TrackBarZoomStyleSettings></dxe:TrackBarZoomStyleSettings>
+                </dxe:TrackBarEdit.StyleSettings>
+              </dxe:TrackBarEdit>
+              <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Alert Time: " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
+              <GroupBox Grid.Row="0" Grid.Column="1" Header="Sound Files" HorizontalAlignment="Stretch">
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                  </Grid.RowDefinitions>
+                  <ComboBox Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
                         SelectedItem="{Binding SelectedAlertSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
-                <ComboBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
+                  <ComboBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
                         SelectedItem="{Binding SelectedLunchBreakSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label Grid.Row="0" Content="Alert:" HorizontalAlignment="Left" Width="70" Height="25"  Margin="5"/>
-                <Label Grid.Row="1" Content="Lunch:" HorizontalAlignment="Left" Width="70" Height="25"  Margin="5"/>
-                <Button Grid.Row="2" Content="Add sounds" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Width="100" Height="25" Command="{Binding CmdAddSounds}"/>
-              </Grid>
-            </GroupBox>
-            <CheckBox Grid.Column="1" Grid.Row="2" Content="Time Logging" Margin="10,5,10,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
+                  <Label Grid.Row="0" Content="Alert:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
+                  <Label Grid.Row="1" Content="Lunch:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
+                  <Button Grid.Row="2" Content="Add sounds" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Width="100" Height="25" Command="{Binding CmdAddSounds}"/>
+                </Grid>
+              </GroupBox>
+              <CheckBox Grid.Column="1" Grid.Row="1" Content="Time Logging" Margin="10,5,10,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
                       IsChecked="{Binding TimeLogging, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <CheckBox Grid.Column="1" Grid.Row="2" Content="Sound warning" Margin="10,25,10,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
+              <CheckBox Grid.Column="1" Grid.Row="1" Content="Sound warning" Margin="10,25,10,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
                       IsChecked="{Binding SoundWarning, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <CheckBox Grid.Column="1" Grid.Row="2" Content="Minimize on Startup" Margin="10,45,10,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
+              <CheckBox Grid.Column="1" Grid.Row="1" Content="Minimize on Startup" Margin="10,45,10,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
                       IsChecked="{Binding MinimizeOnStartUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <CheckBox Grid.Column="1" Grid.Row="2" Content="Send e-mail to your contacts" Margin="10,65,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"  
+              <CheckBox Grid.Column="1" Grid.Row="1" Content="Send e-mail to your contacts" Margin="10,65,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"  
                       IsChecked="{Binding EmailCheckBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="24"/>
-            <Button Grid.Column="1" Grid.Row="2" Margin="30,90,30,0" Height="25" Width="140" Content="E-mail Settings" Visibility="{Binding DisplayEmailButton}"
+              <Button Grid.Column="1" Grid.Row="1" Margin="30,90,30,0" Height="25" Width="140" Content="E-mail Settings" Visibility="{Binding DisplayEmailButton}"
                   Command="{Binding CmdEditMail}"/>
+            </Grid>
           </Grid>
         </GroupBox>
       <Button Grid.Row="1" Content="OK" HorizontalAlignment="Left" Margin="100,10" Width="80" FontSize="14" Command="{Binding CmdSaveSettings}" />
