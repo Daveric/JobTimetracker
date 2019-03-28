@@ -16,6 +16,8 @@
     public static string Configuration = "Configuration";
     public static string WorkingHoursPerWeek = "WorkingHoursPerWeek";
     public static string WorkingDaysPerWeek = "WorkingDaysPerWeek";
+    public static string LunchBreakTime = "LunchBreakTime";
+    public static string AlertTime = "AlertTime";
     public static string TimeLogFileLocationName = "TimeLogFileLocationName";
     public static string TimeLogging = "TimeLogging";
     public static string SoundWarning = "SoundWarning";

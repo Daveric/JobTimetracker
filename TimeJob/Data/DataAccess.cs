@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using GalaSoft.MvvmLight;
 using TimeJob.ViewModel;
 
 namespace TimeJob.Data
@@ -199,6 +197,16 @@ namespace TimeJob.Data
       writer.WriteEndElement();
 
       writer.WriteStartElement("Property");
+      writer.WriteAttributeString("name", Constants.LunchBreakTime);
+      writer.WriteValue(viewModel.MinutesBreak);
+      writer.WriteEndElement();
+
+      writer.WriteStartElement("Property");
+      writer.WriteAttributeString("name", Constants.AlertTime);
+      writer.WriteValue(viewModel.MinutesAlert);
+      writer.WriteEndElement();
+
+      writer.WriteStartElement("Property");
       writer.WriteAttributeString("name", Constants.TimeLogFileLocationName);
       writer.WriteString(viewModel.TimeLogFileLocationName);
       writer.WriteEndElement();
@@ -209,13 +217,18 @@ namespace TimeJob.Data
       writer.WriteEndElement();
 
       writer.WriteStartElement("Property");
-      writer.WriteAttributeString("name", Constants.EmailCheckBox);
-      writer.WriteValue(viewModel.EmailCheckBox? 1 : 0);
+      writer.WriteAttributeString("name", Constants.SoundWarning);
+      writer.WriteValue(viewModel.SoundWarning? 1 : 0);
       writer.WriteEndElement();
 
       writer.WriteStartElement("Property");
-      writer.WriteAttributeString("name", Constants.SoundWarning);
-      writer.WriteValue(viewModel.SoundWarning? 1 : 0);
+      writer.WriteAttributeString("name", Constants.MinimizeOnStartUp);
+      writer.WriteValue(viewModel.MinimizeOnStartUp ? 1 : 0);
+      writer.WriteEndElement();
+
+      writer.WriteStartElement("Property");
+      writer.WriteAttributeString("name", Constants.EmailCheckBox);
+      writer.WriteValue(viewModel.EmailCheckBox ? 1 : 0);
       writer.WriteEndElement();
 
       writer.WriteEndElement();
@@ -266,6 +279,10 @@ namespace TimeJob.Data
           viewModel.WorkingHoursPerWeek = int.Parse(elem.Value);
         if (elem.FirstAttribute.Value == Constants.WorkingDaysPerWeek)
           viewModel.WorkingDaysPerWeek = int.Parse(elem.Value);
+        if (elem.FirstAttribute.Value == Constants.LunchBreakTime)
+          viewModel.MinutesBreak = double.Parse(elem.Value);
+        if (elem.FirstAttribute.Value == Constants.AlertTime)
+          viewModel.MinutesAlert = double.Parse(elem.Value);
         if (elem.FirstAttribute.Value == Constants.TimeLogFileLocationName)
           viewModel.TimeLogFileLocationName = elem.Value;
         if (elem.FirstAttribute.Value == Constants.TimeLogging)
@@ -300,7 +317,7 @@ namespace TimeJob.Data
       var fileInfo = new FileInfo(path);
 
       if (!Directory.Exists(fileInfo.DirectoryName))
-        Directory.CreateDirectory(fileInfo.DirectoryName);
+        Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
     }
 
     #endregion Functions

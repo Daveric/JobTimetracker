@@ -61,7 +61,7 @@ namespace TimeJob.ViewModel
       set
       {
         _startTime = value;
-        _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(WorkingHoursPerWeek / WorkingDaysPerWeek);
+        _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(_workingHoursPerWeek / _workingDaysPerWeek);
         _maximumEndTime = _regularEndTime + TimeSpan.FromHours(2);
         RaisePropertyChanged("RegularEndTime");
         RaisePropertyChanged("MaximumEndTime");
@@ -255,6 +255,7 @@ namespace TimeJob.ViewModel
 
     private void CmdCloseWindowExecute(Window window)
     {
+      DataAccess.SaveConfiguration(this);
       window?.Close();
     }
 
@@ -293,6 +294,9 @@ namespace TimeJob.ViewModel
     private void CmdSaveSettingsExecute()
     {
       DataAccess.SaveConfiguration(this);
+      DisplayConfig = false;
+      DataAccess.LoadConfiguration(this);
+      RaisePropertyChanged("StartTime");
     }
 
     public RelayCommand CmdTrackTime { get; private set; }
@@ -307,7 +311,6 @@ namespace TimeJob.ViewModel
     private void CmdConfigExecute()
     {
       DisplayConfig = true;
-      ChargeSoundFiles();
     }
 
     public RelayCommand CmdEditMail { get; private set; }
@@ -334,7 +337,7 @@ namespace TimeJob.ViewModel
     #endregion Commands
 
     #region Functions
-
+    
     private void StartTimer()
     {
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -365,13 +368,10 @@ namespace TimeJob.ViewModel
 
     private void InitGeneralSettings()
     {
-      WorkingDaysPerWeek = 5;
       StartTime = GetLastLoggingToMachine().Value;
       StartTimer();
       RemainingTimerToGo();
       RemainingTimerToGoMaximum();
-
-      SoundWarning = true;
       ChargeSoundFiles();
 
       CmdConfig = new RelayCommand(CmdConfigExecute);
@@ -403,6 +403,7 @@ namespace TimeJob.ViewModel
     {
 
     }
+
     #endregion Functions
 
 

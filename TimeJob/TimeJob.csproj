@@ -77,8 +77,10 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -162,6 +164,9 @@
     <Resource Include="Data\Settings.xml">
       <SubType>Designer</SubType>
     </Resource>
+    <Resource Include="Images\clock.ico" />
+    <Resource Include="Images\alertclock.ico" />
+    <Resource Include="Images\warningclock.ico" />
     <Content Include="SoundFiles\Aoogah.wav" />
     <Content Include="SoundFiles\Disconnect.wav" />
     <Content Include="SoundFiles\Explosion.wav" />
