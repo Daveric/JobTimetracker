@@ -52,6 +52,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DevExpress.Data.18.2.3\lib\net452\DevExpress.Data.v18.2.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.Mvvm.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DevExpress.Data.18.2.3\lib\net452\DevExpress.Mvvm.v18.2.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Printing.v18.2.Core">
       <HintPath>..\packages\DevExpress.Data.18.2.3\lib\net452\DevExpress.Printing.v18.2.Core.dll</HintPath>
     </Reference>

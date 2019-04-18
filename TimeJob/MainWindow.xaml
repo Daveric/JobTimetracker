@@ -89,16 +89,18 @@
             <Label Margin="5" FontSize="16" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeNow, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="1" Grid.Column="0" Margin="5" Header="Regular End Time">
-            <Label Margin="5" FontSize="16" Height="25" HorizontalAlignment="Stretch" Content="{Binding RegularEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Margin="5" FontSize="16" Height="25" HorizontalAlignment="Stretch" Content="{Binding RegularEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="1" Grid.Column="1" Margin="5" Header="Maximum End Time">
             <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding MaximumEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" Header="Time To Go">
-            <Label Margin="5" FontSize="16" VerticalAlignment="top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Margin="5" FontSize="16" VerticalAlignment="top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="2" Grid.Column="1" Margin="5" Header="Time To Go Max.">
-            <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGoMaximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGoMaximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
         </Grid>
         <Button Grid.Row="2" Width="140" Height="25" Content="Minimize to Tray" HorizontalAlignment="Center" Margin="0,5,0,15"  Click="CmdMinimizeToTray"/>

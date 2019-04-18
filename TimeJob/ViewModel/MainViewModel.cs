@@ -12,6 +12,7 @@ using Microsoft.Win32;
 using TimeJob.Data;
 using System.DirectoryServices.AccountManagement;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace TimeJob.ViewModel
 {
@@ -61,10 +62,7 @@ namespace TimeJob.ViewModel
       set
       {
         _startTime = value;
-        _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(_workingHoursPerWeek / _workingDaysPerWeek);
-        _maximumEndTime = _regularEndTime + TimeSpan.FromHours(2);
-        RaisePropertyChanged("RegularEndTime");
-        RaisePropertyChanged("MaximumEndTime");
+        UpgradeTimers();
       }
     }
 
@@ -73,11 +71,7 @@ namespace TimeJob.ViewModel
       get => _timeNow.ToString("HH:mm:ss");
       set { _timeNow = Convert.ToDateTime(value); RaisePropertyChanged(); }
     }
-
-    public string RegularEndTime => _regularEndTime.ToString("HH:mm:ss");
-    
-    public string MaximumEndTime => _maximumEndTime.ToString("HH:mm:ss");
-
+        
     public string TimeToGo
     {
       get => _timeToGo.ToString(@"hh\:mm\:ss");
@@ -119,11 +113,20 @@ namespace TimeJob.ViewModel
     public double MinutesBreak
     {
       get => _timeLunchBreak.TotalMinutes;
-      set { _timeLunchBreak = TimeSpan.FromMinutes(value); RaisePropertyChanged("MinutesBreakText");
+      set {
+        _timeLunchBreak = TimeSpan.FromMinutes(value);
+        UpgradeTimers();
+        RaisePropertyChanged("MinutesBreakText");
       }
     }
 
     public string MinutesBreakText => _timeLunchBreak.ToString(@"hh\:mm");
+
+    public string RegularEndTime => _regularEndTime.ToString("HH:mm:ss");
+
+    public string MaximumEndTime => _maximumEndTime.ToString("HH:mm:ss");
+
+    public SolidColorBrush ColorTime { get; set; }
 
     public static string AssemblyDirectory
     {
@@ -295,8 +298,6 @@ namespace TimeJob.ViewModel
     {
       DataAccess.SaveConfiguration(this);
       DisplayConfig = false;
-      DataAccess.LoadConfiguration(this);
-      RaisePropertyChanged("StartTime");
     }
 
     public RelayCommand CmdTrackTime { get; private set; }
@@ -348,14 +349,36 @@ namespace TimeJob.ViewModel
     private void RemainingTimerToGo()
     {
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-      timer.Tick += (s,e) => TimeToGo = (_regularEndTime - _timeNow).ToString(@"hh\:mm\:ss"); ;
+      timer.Tick += (s,e) =>
+      {
+        var timeToGo = _regularEndTime - _timeNow;
+        TimeToGo = timeToGo.ToString(@"hh\:mm\:ss");
+
+        if (TimeSpan.Compare(TimeSpan.Zero, timeToGo) == 1 && TimeSpan.Compare(timeToGo,-_timeAlert) == 1)
+        {
+          ColorTime = new SolidColorBrush(Colors.Orange);
+        }
+        else if (TimeSpan.Compare(-_timeAlert, timeToGo) == 1 || TimeSpan.Compare(-_timeAlert, timeToGo) == 0)
+        {
+          ColorTime = new SolidColorBrush(Colors.Red);
+        }
+        else
+        {
+          ColorTime = new SolidColorBrush(Colors.Black);
+        }
+        RaisePropertyChanged("ColorTime");
+      }; 
       timer.Start();
     }
 
     private void RemainingTimerToGoMaximum()
     {
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-      timer.Tick += (s, e) => TimeToGoMaximum = (_maximumEndTime - _timeNow).ToString(@"hh\:mm\:ss"); ;
+      timer.Tick += (s, e) =>
+      {
+        var timeToGoMaximum = _maximumEndTime - _timeNow;
+        TimeToGoMaximum = timeToGoMaximum.ToString(@"hh\:mm\:ss");
+      }; 
       timer.Start();
     }
 
@@ -364,6 +387,14 @@ namespace TimeJob.ViewModel
       var c = new PrincipalContext(ContextType.Machine, Environment.MachineName);
       var uc = UserPrincipal.FindByIdentity(c, Environment.UserName);
       return uc.LastLogon;
+    }
+
+    private void UpgradeTimers()
+    {
+      _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(_workingHoursPerWeek / _workingDaysPerWeek);
+      _maximumEndTime = _regularEndTime + _timeAlert;
+      RaisePropertyChanged("RegularEndTime");
+      RaisePropertyChanged("MaximumEndTime");
     }
 
     private void InitGeneralSettings()
