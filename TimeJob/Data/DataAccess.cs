@@ -11,10 +11,7 @@ namespace TimeJob.Data
     #region Properties
 
     private static string SettingsFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      @"Time Job Tracking\Data\Settings.xml");
-    
-    private static string TimeLoggingFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      @"Time Job Tracking\Data\TimeLogging.xml");
+      @"TimeJobTracking\Data\Settings.xml");
 
     #endregion Properties
 

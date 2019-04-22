@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,7 +43,7 @@ namespace TimeJob.ViewModel
         {
           string[] fields = tfp.ReadFields();
 
-          for (int i = 0; i < fields.Count(); i++)
+          for (int i = 0; i < (fields ?? throw new InvalidOperationException()).Count(); i++)
           {
             if (firstRowContainsFieldNames)
               result.Columns.Add(fields[i]);
@@ -57,7 +58,7 @@ namespace TimeJob.ViewModel
 
         // Get Remaining Rows from the CSV
         while (!tfp.EndOfData)
-          result.Rows.Add(tfp.ReadFields());
+          result.Rows.Add(tfp.ReadFields() ?? throw new InvalidOperationException());
       }
 
       return result;

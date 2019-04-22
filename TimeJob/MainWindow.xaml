@@ -44,12 +44,12 @@
           </MenuItem>
         </MenuItem>
         <MenuItem Header="_Alarm">
-          <MenuItem Header="_Reset" CommandParameter="{Binding ElementName=JobTime}" />
-          <MenuItem Header="_Deactivate" CommandParameter="{Binding ElementName=JobTime}" />
+          <MenuItem Header="_Reset" Command="{Binding CmdReset}" CommandParameter="{Binding ElementName=JobTime}" />
+          <MenuItem Header="_Deactivate" Command="{Binding CmdDeactivate}" CommandParameter="{Binding ElementName=JobTime}" />
         </MenuItem>
         <MenuItem Header="_Help">
-          <MenuItem Header="_Language" CommandParameter="{Binding ElementName=JobTime}" />
-          <MenuItem Header="_About" CommandParameter="{Binding ElementName=JobTime}" />
+          <MenuItem Header="_Language" Command="{Binding CmdLanguage}" CommandParameter="{Binding ElementName=JobTime}" />
+          <MenuItem Header="_About" Command="{Binding CmdAbout}" CommandParameter="{Binding ElementName=JobTime}" />
         </MenuItem>
       </Menu>
     </DockPanel>
@@ -111,7 +111,7 @@
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Height="25" IsReadOnly="True" Text="{Binding TimeLogFileLocationName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Left" Margin="5,0"/>
-            <Button Grid.Column="1" Width="40" Height="25" Command="{Binding CmdOpenFileLocation}" RenderTransformOrigin="1.764,1.713">
+            <Button Grid.Column="1" Width="40" Height="25" Command="{Binding CmdOpenLoggingFileLocation}" RenderTransformOrigin="1.764,1.713">
               <StackPanel>
                 <Image Source="Images/OpenFileLocation.png" Height="15" Width="15"></Image>
               </StackPanel>
@@ -124,6 +124,7 @@
           <RotateTransform Angle="90" />
         </Separator.LayoutTransform>
       </Separator>
+      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCVS}" ItemsSource="{Binding DataCVS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></DataGrid>
       <Grid Grid.Column="1" Visibility="{Binding DisplayConfiguration}">
         <Grid.RowDefinitions>
           <RowDefinition Height="*" />
@@ -190,11 +191,11 @@
                     <RowDefinition Height="*"/>
                   </Grid.RowDefinitions>
                   <ComboBox Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
-                        SelectedItem="{Binding SelectedAlertSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
+                        SelectedItem="{Binding SelectedWarningSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
                   <ComboBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
-                        SelectedItem="{Binding SelectedLunchBreakSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
-                  <Label Grid.Row="0" Content="Alert:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
-                  <Label Grid.Row="1" Content="Lunch:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
+                        SelectedItem="{Binding SelectedAlertSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
+                  <Label Grid.Row="0" Content="Warning:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
+                  <Label Grid.Row="1" Content="Alert:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
                   <Button Grid.Row="2" Content="Add sounds" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Width="100" Height="25" Command="{Binding CmdAddSounds}"/>
                 </Grid>
               </GroupBox>
