@@ -103,7 +103,7 @@
     </Compile>
     <Compile Include="ViewModel\EmailViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ReadCsv.cs" />
+    <Compile Include="ViewModel\ImportCsv.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -171,6 +171,10 @@
     <Resource Include="Images\clock.ico" />
     <Resource Include="Images\alertclock.ico" />
     <Resource Include="Images\warningclock.ico" />
+    <Resource Include="Images\deactivate.png" />
+    <Resource Include="Images\reset.png" />
+    <Resource Include="Images\help_about.png" />
+    <Resource Include="Images\language.png" />
     <Content Include="SoundFiles\Aoogah.wav" />
     <Content Include="SoundFiles\Disconnect.wav" />
     <Content Include="SoundFiles\Explosion.wav" />

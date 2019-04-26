@@ -1,25 +1,22 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
 
 namespace TimeJob.ViewModel
 {
-  public class ReadCsv
+  public class ImportCsv
   {
-    public DataTable readCSV;
+    public DataTable ReadCsv;
 
-    public ReadCsv(string fileName, bool firstRowContainsFieldNames = true)
+    public ImportCsv(string fileName, bool firstRowContainsFieldNames = true)
     {
-      readCSV = GenerateDataTable(fileName, firstRowContainsFieldNames);
+      ReadCsv = GenerateDataTable(fileName, firstRowContainsFieldNames);
     }
 
     private static DataTable GenerateDataTable(string fileName, bool firstRowContainsFieldNames = true)
     {
-      DataTable result = new DataTable();
+      var result = new DataTable();
 
       if (fileName == "")
       {
@@ -43,7 +40,7 @@ namespace TimeJob.ViewModel
         {
           string[] fields = tfp.ReadFields();
 
-          for (int i = 0; i < (fields ?? throw new InvalidOperationException()).Count(); i++)
+          for (int i = 0; i < fields.Count(); i++)
           {
             if (firstRowContainsFieldNames)
               result.Columns.Add(fields[i]);
@@ -58,7 +55,7 @@ namespace TimeJob.ViewModel
 
         // Get Remaining Rows from the CSV
         while (!tfp.EndOfData)
-          result.Rows.Add(tfp.ReadFields() ?? throw new InvalidOperationException());
+          result.Rows.Add(tfp.ReadFields());
       }
 
       return result;

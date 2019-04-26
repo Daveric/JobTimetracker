@@ -309,7 +309,7 @@ namespace TimeJob.Data
 
     #region Functions
 
-    private static void EnsureDirectory(string path)
+    public static void EnsureDirectory(string path)
     {
       var fileInfo = new FileInfo(path);
 

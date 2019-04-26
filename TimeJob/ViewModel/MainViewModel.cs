@@ -12,6 +12,7 @@ using Microsoft.Win32;
 using TimeJob.Data;
 using System.DirectoryServices.AccountManagement;
 using System.Media;
+using System.Text;
 using System.Windows.Media;
 
 namespace TimeJob.ViewModel
@@ -267,13 +268,14 @@ namespace TimeJob.ViewModel
       {
         _displayConfig = value;
         RaisePropertyChanged("DisplayConfiguration");
+        RaisePropertyChanged("DisplayDataCSV");
       }
     }
     public Visibility DisplayConfiguration
     {
       get => DisplayConfig ? Visibility.Visible : Visibility.Hidden;
     }
-    public Visibility DisplayDataCVS
+    public Visibility DisplayDataCSV
     {
       get => DisplayConfig ? Visibility.Hidden : Visibility.Visible;
     }
@@ -336,6 +338,7 @@ namespace TimeJob.ViewModel
       if (TimeLogging)
       {
         LoadCSVOnDataGridView(_timeLogFileLocation);
+        RaisePropertyChanged("DataCSV");
       }
       else
       {
@@ -358,7 +361,7 @@ namespace TimeJob.ViewModel
       WorkingHoursPerWeek = 40;
       MinutesBreak = 30;
       MinutesAlert = 60;
-      _timeLogFileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"TimeJobTracking\Data\TimeLogging.cvs");
+      _timeLogFileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"TimeJobTracking\Data\TimeLogging.csv");
 
       RaisePropertyChanged("TimeLogFileLocationName");
       RaisePropertyChanged("MinutesAlertText");
@@ -369,7 +372,8 @@ namespace TimeJob.ViewModel
 
     private void CmdDeactivateExecute()
     {
-
+      TimerWarning(false);
+      TimerAlert(false);
     }
 
     public RelayCommand CmdLanguage { get; private set; }
@@ -434,12 +438,12 @@ namespace TimeJob.ViewModel
       timer.Start();
     }
 
-    private void TimerWarning()
+    private void TimerWarning(bool flag)
     {
       var timer = new DispatcherTimer() {Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
-        if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0)
+        if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0 && flag)
         {
           timer.Stop();
           try
@@ -456,12 +460,12 @@ namespace TimeJob.ViewModel
       timer.Start();
     }
 
-    private void TimerAlert()
+    private void TimerAlert(bool flag)
     {
       var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
-        if (TimeSpan.Compare(TimeSpan.Zero, _maximumEndTime - _timeNow) == 0)
+        if (TimeSpan.Compare(TimeSpan.Zero, _maximumEndTime - _timeNow) == 0 && flag)
         {
           timer.Stop();
           try
@@ -516,8 +520,9 @@ namespace TimeJob.ViewModel
       StartTimer();
       RemainingTimerToGo();
       ChargeSoundFiles();
-      TimerWarning();
-      TimerAlert();
+      TimerWarning(true);
+      TimerAlert(true);
+      CmdTrackTimeExecute();
 
       CmdOpenLoggingFileLocation = new RelayCommand(CmdOpenLoggingFileLocationExecute);
 
@@ -555,25 +560,58 @@ namespace TimeJob.ViewModel
 
     private void ActivateAlarm(string soundPath)
     {
-      var soundPlayer = new SoundPlayer();
-      soundPlayer.SoundLocation = soundPath;
+      var soundPlayer = new SoundPlayer{SoundLocation = soundPath};
       soundPlayer.Play();
     }
 
     #endregion Functions
 
-    #region LoadDataCVS
+    #region DataCVS
 
-    public DataTable DataCVS { get; set; }
+    private DataTable _dataCSV;
+
+    public DataTable DataCSV
+    {
+      get => _dataCSV;
+      set { _dataCSV = value; RaisePropertyChanged(); }
+    }
+
+    private void SaveDataOnCSVFile(string fileName)
+    {
+      try
+      {
+        if (!File.Exists(fileName))
+        {
+          DataAccess.EnsureDirectory(fileName);
+        }
+
+        var csv = new StringBuilder();
+        var Date = DateTime.Today;
+        var Start = StartTime.ToString();
+        var End = TimeNow;
+        var Remark = string.Empty;
+
+        var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
+        csv.Append(File.ReadAllText(fileName));
+        csv.AppendLine(newLine);
+
+        File.WriteAllText(fileName,csv.ToString());
+
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(ex.Message);
+      }
+    }
     private void LoadCSVOnDataGridView(string fileName)
     {
       try
       {
-        var csv = new ReadCsv(fileName);
-
+        if (!File.Exists(fileName)) return;
+        var csv = new ImportCsv(fileName);
         try
         {
-          DataCVS = csv.readCSV;
+          DataCSV = csv.ReadCsv;
         }
         catch (Exception ex)
         {
@@ -586,6 +624,6 @@ namespace TimeJob.ViewModel
       }
     }
 
-    #endregion LoadDataCVS
+    #endregion DataCVS
   }
 }

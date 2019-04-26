@@ -44,14 +44,30 @@
           </MenuItem>
         </MenuItem>
         <MenuItem Header="_Alarm">
-          <MenuItem Header="_Reset" Command="{Binding CmdReset}" CommandParameter="{Binding ElementName=JobTime}" />
-          <MenuItem Header="_Deactivate" Command="{Binding CmdDeactivate}" CommandParameter="{Binding ElementName=JobTime}" />
+          <MenuItem Header="_Reset" Command="{Binding CmdReset}" CommandParameter="{Binding ElementName=JobTime}">
+            <MenuItem.Icon>
+              <Image Source="Images/reset.png" />
+          </MenuItem.Icon>
+        </MenuItem>
+          <MenuItem Header="_Deactivate" Command="{Binding CmdDeactivate}" CommandParameter="{Binding ElementName=JobTime}" >
+            <MenuItem.Icon>
+              <Image Source="Images/deactivate.png" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
         <MenuItem Header="_Help">
-          <MenuItem Header="_Language" Command="{Binding CmdLanguage}" CommandParameter="{Binding ElementName=JobTime}" />
-          <MenuItem Header="_About" Command="{Binding CmdAbout}" CommandParameter="{Binding ElementName=JobTime}" />
+          <MenuItem Header="_Language" Command="{Binding CmdLanguage}" CommandParameter="{Binding ElementName=JobTime}" >
+            <MenuItem.Icon>
+              <Image Source="Images/language.png" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="_About" Command="{Binding CmdAbout}" CommandParameter="{Binding ElementName=JobTime}" >
+            <MenuItem.Icon>
+              <Image Source="Images/help_about.png" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
-      </Menu>
+        </Menu>
     </DockPanel>
     <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
@@ -124,7 +140,7 @@
           <RotateTransform Angle="90" />
         </Separator.LayoutTransform>
       </Separator>
-      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCVS}" ItemsSource="{Binding DataCVS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></DataGrid>
+      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCSV}" ItemsSource="{Binding DataCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></DataGrid>
       <Grid Grid.Column="1" Visibility="{Binding DisplayConfiguration}">
         <Grid.RowDefinitions>
           <RowDefinition Height="*" />
