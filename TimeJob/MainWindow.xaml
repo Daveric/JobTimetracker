@@ -140,7 +140,7 @@
           <RotateTransform Angle="90" />
         </Separator.LayoutTransform>
       </Separator>
-      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCSV}" ItemsSource="{Binding DataCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></DataGrid>
+      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCSV}" ItemsSource="{Binding DataCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CanUserAddRows="True"></DataGrid>
       <Grid Grid.Column="1" Visibility="{Binding DisplayConfiguration}">
         <Grid.RowDefinitions>
           <RowDefinition Height="*" />
@@ -207,9 +207,9 @@
                     <RowDefinition Height="*"/>
                   </Grid.RowDefinitions>
                   <ComboBox Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
-                        SelectedItem="{Binding SelectedWarningSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
+                        SelectedItem="{Binding SelectedWarningSound}" IsEnabled="{Binding SoundWarning, UpdateSourceTrigger=PropertyChanged}"/>
                   <ComboBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="120" FontSize="12" ItemsSource="{Binding SoundsList}" 
-                        SelectedItem="{Binding SelectedAlertSound}" IsEnabled="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
+                        SelectedItem="{Binding SelectedAlertSound}" IsEnabled="{Binding SoundWarning, UpdateSourceTrigger=PropertyChanged}"/>
                   <Label Grid.Row="0" Content="Warning:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
                   <Label Grid.Row="1" Content="Alert:" HorizontalAlignment="Left" Width="70" Height="30" Margin="5,2" VerticalContentAlignment="Top"/>
                   <Button Grid.Row="2" Content="Add sounds" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Width="100" Height="25" Command="{Binding CmdAddSounds}"/>
