@@ -69,19 +69,19 @@ namespace TimeJob.ViewModel
 
     public string TimeNow
     {
-      get => _timeNow.ToString("HH:mm:ss");
+      get => _timeNow.ToString(@"HH:mm:ss");
       set { _timeNow = Convert.ToDateTime(value); RaisePropertyChanged(); }
     }
         
     public string TimeToGo
     {
-      get => _timeToGo.ToString(@"hh\:mm\:ss");
+      get => _timeToGo.ToString();
       set { _timeToGo = TimeSpan.Parse(value); RaisePropertyChanged();}
     }
 
     public string TimeToGoMaximum
     {
-      get => _timeToGoMaximum.ToString(@"hh\:mm\:ss");
+      get => _timeToGoMaximum.ToString();
       set { _timeToGoMaximum = TimeSpan.Parse(value); RaisePropertyChanged(); }
     }
 
@@ -240,18 +240,6 @@ namespace TimeJob.ViewModel
       get => Properties.Resources.Warning;
     }
 
-    private bool _isEnabled;
-
-    public bool IsEnabled
-    {
-      get => _isEnabled && SoundWarning;
-      set
-      {
-        _isEnabled = value;
-        RaisePropertyChanged();
-      }
-    }
-
     private bool _mininizeOnStartUp;
     public bool MinimizeOnStartUp
     {
@@ -329,6 +317,7 @@ namespace TimeJob.ViewModel
       DataAccess.SaveConfiguration(this);
       DisplayConfig = false;
       CmdTrackTimeExecute();
+      SaveDataOnCSVFile(_timeLogFileLocation);
     }
 
     public RelayCommand CmdTrackTime { get; private set; }
@@ -342,7 +331,8 @@ namespace TimeJob.ViewModel
       }
       else
       {
-        CmdConfigExecute();
+        MessageBox.Show("TimeLogging is deactivated", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        DisplayConfig = true;
       }
     }
 
@@ -362,6 +352,7 @@ namespace TimeJob.ViewModel
       MinutesBreak = 30;
       MinutesAlert = 60;
       _timeLogFileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"TimeJobTracking\Data\TimeLogging.csv");
+      ChargeSoundFiles();
 
       RaisePropertyChanged("TimeLogFileLocationName");
       RaisePropertyChanged("MinutesAlertText");
@@ -372,8 +363,8 @@ namespace TimeJob.ViewModel
 
     private void CmdDeactivateExecute()
     {
-      TimerWarning(false);
-      TimerAlert(false);
+      SoundWarning = false;
+      RaisePropertyChanged("SoundWarning");
     }
 
     public RelayCommand CmdLanguage { get; private set; }
@@ -418,7 +409,7 @@ namespace TimeJob.ViewModel
     private void StartTimer()
     {
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-      timer.Tick += (s, e) => TimeNow = DateTime.Now.ToString("HH:mm:ss");
+      timer.Tick += (s, e) => TimeNow = DateTime.Now.ToString(@"HH:mm:ss");
       timer.Start();
     }
 
@@ -428,22 +419,22 @@ namespace TimeJob.ViewModel
       timer.Tick += (s,e) =>
       {
         var timeToGo = _regularEndTime - _timeNow;
-        TimeToGo = timeToGo.ToString(@"hh\:mm\:ss");
+        TimeToGo = timeToGo.ToString();
 
         var timeToGoMaximum = _maximumEndTime - _timeNow;
-        TimeToGoMaximum = timeToGoMaximum.ToString(@"hh\:mm\:ss");
+        TimeToGoMaximum = timeToGoMaximum.ToString();
 
         UpdateTimersColor(timeToGo);
       }; 
       timer.Start();
     }
 
-    private void TimerWarning(bool flag)
+    private void TimerWarning()
     {
       var timer = new DispatcherTimer() {Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
-        if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0 && flag)
+        if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0 && SoundWarning)
         {
           timer.Stop();
           try
@@ -460,12 +451,12 @@ namespace TimeJob.ViewModel
       timer.Start();
     }
 
-    private void TimerAlert(bool flag)
+    private void TimerAlert()
     {
       var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
-        if (TimeSpan.Compare(TimeSpan.Zero, _maximumEndTime - _timeNow) == 0 && flag)
+        if (TimeSpan.Compare(TimeSpan.Zero, _maximumEndTime - _timeNow) == 0 && SoundWarning)
         {
           timer.Stop();
           try
@@ -520,8 +511,8 @@ namespace TimeJob.ViewModel
       StartTimer();
       RemainingTimerToGo();
       ChargeSoundFiles();
-      TimerWarning(true);
-      TimerAlert(true);
+      TimerWarning();
+      TimerAlert();
       CmdTrackTimeExecute();
 
       CmdOpenLoggingFileLocation = new RelayCommand(CmdOpenLoggingFileLocationExecute);
@@ -551,7 +542,8 @@ namespace TimeJob.ViewModel
       }
       if (SoundsDict.Count >= 1)
       {
-        IsEnabled = true;
+        SoundWarning = true;
+        RaisePropertyChanged("SoundWarning");
       }
 
       SelectedAlertSound = SoundsDict.Keys.ElementAt(0);
@@ -580,34 +572,46 @@ namespace TimeJob.ViewModel
     {
       try
       {
-        if (!File.Exists(fileName))
-        {
-          DataAccess.EnsureDirectory(fileName);
-        }
-
         var csv = new StringBuilder();
-        var Date = DateTime.Today;
-        var Start = StartTime.ToString();
-        var End = TimeNow;
+        var Date = DateTime.Today.ToString(@"d");
+        var Start = StartTime.ToString(@"h:mm:ss tt");
+        var End = _timeNow.ToString(@"h:mm:ss tt");
         var Remark = string.Empty;
 
         var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
-        csv.Append(File.ReadAllText(fileName));
+
+        IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+        csv.AppendLine(string.Join(",", columnNames));
+
+        DateTime dateValue;
+        foreach (DataRow row in DataCSV.Rows)
+        {
+          IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+          var fieldLine = string.Join(",", fields);
+          if ((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
+          {
+            csv.AppendLine(fieldLine);
+          }
+        }
+
         csv.AppendLine(newLine);
 
         File.WriteAllText(fileName,csv.ToString());
-
       }
       catch (Exception ex)
       {
-        throw new Exception(ex.Message);
+        MessageBox.Show(ex.Message, "Message", MessageBoxButton.OK, MessageBoxImage.Error);
       }
     }
     private void LoadCSVOnDataGridView(string fileName)
     {
       try
       {
-        if (!File.Exists(fileName)) return;
+        if (!File.Exists(fileName))
+        {
+          DataAccess.EnsureDirectory(fileName);
+        }
+
         var csv = new ImportCsv(fileName);
         try
         {
