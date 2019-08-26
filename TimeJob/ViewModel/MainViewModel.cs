@@ -285,6 +285,9 @@ namespace TimeJob.ViewModel
     private void CmdHideConfigExecute()
     {
       DisplayConfig = false;
+      SaveDataOnCSVFile(_timeLogFileLocation);
+      LoadCSVOnDataGridView(_timeLogFileLocation);
+      RaisePropertyChanged("DataCSV");
     }
 
     public RelayCommand CmdAddSounds { get; private set; }
@@ -318,6 +321,8 @@ namespace TimeJob.ViewModel
       DisplayConfig = false;
       CmdTrackTimeExecute();
       SaveDataOnCSVFile(_timeLogFileLocation);
+      LoadCSVOnDataGridView(_timeLogFileLocation);
+      RaisePropertyChanged("DataCSV");
     }
 
     public RelayCommand CmdTrackTime { get; private set; }
