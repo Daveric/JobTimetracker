@@ -430,6 +430,8 @@ namespace TimeJob.ViewModel
         TimeToGoMaximum = timeToGoMaximum.ToString();
 
         UpdateTimersColor(timeToGo);
+
+        ShowPopUpDialog(timeToGo);
       }; 
       timer.Start();
     }
@@ -478,11 +480,19 @@ namespace TimeJob.ViewModel
       timer.Start();
     }
 
-    public DateTime? GetLastLoggingToMachine()
+    public DateTime? GetFirstLoggingToMachine()
     {
+      ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime firstLogon);
       var c = new PrincipalContext(ContextType.Machine, Environment.MachineName);
       var uc = UserPrincipal.FindByIdentity(c, Environment.UserName);
-      return uc.LastLogon;
+      if (uc.LastLogon > firstLogon)
+      {
+        return firstLogon;
+      }
+      else
+      {
+        return uc.LastLogon;
+      }
     }
 
     private void UpdateTimers()
@@ -510,9 +520,20 @@ namespace TimeJob.ViewModel
       RaisePropertyChanged("ColorTime");
     }
 
+    private void ShowPopUpDialog(TimeSpan timeToGo)
+    {
+      if ((TimeSpan.Compare(timeToGo, TimeSpan.Zero) == 1) && (timeToGo.TotalSeconds == 10))
+      {
+        var win = new PopUpWindow();
+        win.DataContext = this;
+        win.Show();
+      }
+    }
+
     private void InitGeneralSettings()
     {
-      StartTime = GetLastLoggingToMachine().Value;
+      LoadCSVOnDataGridView(_timeLogFileLocation);
+      StartTime = GetFirstLoggingToMachine().Value;
       StartTimer();
       RemainingTimerToGo();
       ChargeSoundFiles();
@@ -573,17 +594,29 @@ namespace TimeJob.ViewModel
       set { _dataCSV = value; RaisePropertyChanged(); }
     }
 
+    private void ChekDataCSV(string todayDate, out DateTime value)
+    {
+      value = DateTime.Now;
+      foreach (DataRow row in DataCSV.Rows)
+      {
+        IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+        var fieldLine = string.Join(",", fields);
+        if (fieldLine.Contains(todayDate) && DateTime.TryParse(fields.ElementAt(1), out DateTime dateValue))
+        {
+          value = dateValue;
+          break;
+        }
+      }
+    }
+
     private void SaveDataOnCSVFile(string fileName)
     {
       try
       {
         var csv = new StringBuilder();
         var Date = DateTime.Today.ToString(@"d");
-        var Start = StartTime.ToString(@"h:mm:ss tt");
         var End = _timeNow.ToString(@"h:mm:ss tt");
         var Remark = string.Empty;
-
-        var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
 
         IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
         csv.AppendLine(string.Join(",", columnNames));
@@ -599,6 +632,8 @@ namespace TimeJob.ViewModel
           }
         }
 
+        var Start = StartTime.ToString(@"h:mm:ss tt");
+        var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
         csv.AppendLine(newLine);
 
         File.WriteAllText(fileName,csv.ToString());

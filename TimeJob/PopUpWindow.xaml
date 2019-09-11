@@ -1,0 +1,43 @@
+﻿<Window x:Class="TimeJob.PopUpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" SizeToContent="Height" AllowsTransparency="True" Background="Transparent"
+        Title="Remaining Time" Width="300" WindowStyle="None">
+
+    <Grid RenderTransformOrigin="0,1" >
+
+        <!-- Notification area -->
+        <Border BorderThickness="1" Background="AliceBlue" BorderBrush="Black" CornerRadius="8">
+            <StackPanel Margin="10">
+                <TextBlock TextWrapping="Wrap" Margin="5">
+                    <Bold>Time Tracker</Bold><LineBreak /><LineBreak />
+                    Time to go home is close.
+                </TextBlock>
+                <Label Margin="5" FontSize="16" VerticalAlignment="top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Content="Close" Width="100" HorizontalAlignment="Center" Margin="5" Click="CmdClose" />
+            </StackPanel>
+        </Border>
+
+        <!-- Animation -->
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                            <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                            <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+
+        <Grid.RenderTransform>
+            <ScaleTransform ScaleY="1" />
+        </Grid.RenderTransform>
+
+    </Grid>
+</Window>
