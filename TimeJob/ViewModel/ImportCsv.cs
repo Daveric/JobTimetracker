@@ -23,15 +23,15 @@ namespace TimeJob.ViewModel
         return result;
       }
 
-      string delimiters = ",";
-      string extension = Path.GetExtension(fileName);
+      var delimiters = ",";
+      var extension = Path.GetExtension(fileName);
 
       if (extension != null && extension.ToLower() == "txt")
         delimiters = "\t";
       else if (extension != null && extension.ToLower() == "csv")
         delimiters = ",";
 
-      using (TextFieldParser tfp = new TextFieldParser(fileName))
+      using (var tfp = new TextFieldParser(fileName))
       {
         tfp.SetDelimiters(delimiters);
 

@@ -14,6 +14,7 @@ using System.DirectoryServices.AccountManagement;
 using System.Media;
 using System.Text;
 using System.Windows.Media;
+using System.Drawing;
 
 namespace TimeJob.ViewModel
 {
@@ -33,14 +34,26 @@ namespace TimeJob.ViewModel
 
     private static readonly string soundPath = @"..\..\SoundFiles\";
 
+    private System.Windows.Forms.NotifyIcon _notifyIcon;
+
+    private static string timeLoggingFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+      @"TimeJobTracking\Data\TimeLogging.csv");
+
+    private bool _isExit = false;
+
     #endregion Fields
 
-    #region Constructor
+        #region Constructor
 
-    public MainViewModel()
+        public MainViewModel()
     {
       DataAccess.LoadConfiguration(this);
+
+      _notifyIcon = new System.Windows.Forms.NotifyIcon();
+      _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
       InitGeneralSettings();
+      _notifyIcon.Visible = true;
+      CreateContextMenu();
 
       CmdCloseWindow = new RelayCommand<Window>(CmdCloseWindowExecute);
       CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
@@ -431,7 +444,7 @@ namespace TimeJob.ViewModel
 
         UpdateTimersColor(timeToGo);
 
-        ShowPopUpDialog(timeToGo);
+        ShowPopUpDialog(timeToGo, timeToGoMaximum);
       }; 
       timer.Start();
     }
@@ -443,11 +456,11 @@ namespace TimeJob.ViewModel
       {
         if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0 && SoundWarning)
         {
-          timer.Stop();
+          //timer.Stop();
           try
           {
             ActivateAlarm(_warningSoundPath);
-            MessageBox.Show("You raise the Warning time to work", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("You raised the Warning time to work", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
           }
           catch (Exception ex)
           {
@@ -465,11 +478,11 @@ namespace TimeJob.ViewModel
       {
         if (TimeSpan.Compare(TimeSpan.Zero, _maximumEndTime - _timeNow) == 0 && SoundWarning)
         {
-          timer.Stop();
+          //timer.Stop();
           try
           {
             ActivateAlarm(_alertSoundPath);
-            MessageBox.Show("You raise the Alert time to work, you must go home","Alert",  MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            MessageBox.Show("You raised the Alert time to work, you must go home","Alert",  MessageBoxButton.OK, MessageBoxImage.Exclamation);
           }
           catch (Exception ex)
           {
@@ -497,6 +510,8 @@ namespace TimeJob.ViewModel
 
     private void UpdateTimers()
     {
+      if ((_workingDaysPerWeek == 0) || (_workingHoursPerWeek == 0))
+        CmdResetExecute();
       _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(_workingHoursPerWeek / _workingDaysPerWeek);
       _maximumEndTime = _regularEndTime + _timeAlert;
       RaisePropertyChanged("RegularEndTime");
@@ -505,28 +520,68 @@ namespace TimeJob.ViewModel
 
     private void UpdateTimersColor(TimeSpan timeToGo)
     {
-      if (TimeSpan.Compare(TimeSpan.Zero, timeToGo) == 1 && TimeSpan.Compare(timeToGo, -_timeAlert) == 1)
+      if (TimeSpan.Compare(TimeSpan.Zero, timeToGo) == 1 && TimeSpan.Compare(timeToGo, -_timeAlert) == 1 && !_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Orange);
+        _notifyIcon.Icon = new Icon("../../Images/warningclock.ico");
       }
-      else if (TimeSpan.Compare(-_timeAlert, timeToGo) == 1 || TimeSpan.Compare(-_timeAlert, timeToGo) == 0)
+      else if (TimeSpan.Compare(-_timeAlert, timeToGo) == 1 || TimeSpan.Compare(-_timeAlert, timeToGo) == 0 && !_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Red);
+        _notifyIcon.Icon = new Icon("../../Images/alertclock.ico");
       }
-      else
+      else if (!_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Black);
-      }
+        _notifyIcon.Icon = new Icon("../../Images/clock.ico");
+            }
       RaisePropertyChanged("ColorTime");
     }
 
-    private void ShowPopUpDialog(TimeSpan timeToGo)
+    private void ShowPopUpDialog(TimeSpan timeToGo, TimeSpan timeToGoMaximum)
     {
-      if ((TimeSpan.Compare(timeToGo, TimeSpan.Zero) == 1) && (timeToGo.TotalSeconds == 10))
+      if (((TimeSpan.Compare(timeToGo, TimeSpan.Zero) == 1) && (timeToGo.TotalSeconds == 15)) || 
+          ((TimeSpan.Compare(timeToGoMaximum, TimeSpan.Zero) == 1) && (timeToGoMaximum.TotalSeconds == 15)))
       {
         var win = new PopUpWindow();
         win.DataContext = this;
+        if (Application.Current.Windows.OfType<Window>().Any(w => w.Name.Equals("PopUpWindow")))
+        {
+          win.Show();
+        }
         win.Show();
+      }
+    }
+
+    private void CreateContextMenu()
+    {
+      _notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+      _notifyIcon.ContextMenuStrip.Items.Add("Restore").Click += (s, e) => ShowMainWindow();
+      _notifyIcon.ContextMenuStrip.Items.Add("-");
+      _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, e) => ExitApplication();
+    }
+
+    private void ExitApplication()
+    {
+      _isExit = true;
+      Application.Current.Shutdown();
+      _notifyIcon.Dispose();
+      _notifyIcon = null;
+    }
+
+    private void ShowMainWindow()
+    {
+      if (Application.Current.MainWindow != null && Application.Current.MainWindow.IsVisible)
+      {
+        if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+        {
+          Application.Current.MainWindow.WindowState = WindowState.Normal;
+        }
+        Application.Current.MainWindow.Activate();
+      }
+      else
+      {
+        Application.Current.MainWindow?.Show();
       }
     }
 
@@ -647,8 +702,9 @@ namespace TimeJob.ViewModel
     {
       try
       {
-        if (!File.Exists(fileName))
+        if (!File.Exists(fileName) || (fileName == null))
         {
+          fileName = timeLoggingFile;
           DataAccess.EnsureDirectory(fileName);
         }
 

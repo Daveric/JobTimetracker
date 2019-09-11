@@ -16,7 +16,7 @@ namespace TimeJob
         var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
         var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
 
-        Left = corner.X - ActualWidth - 100;
+        Left = corner.X - ActualWidth - 10;
         Top = corner.Y - ActualHeight;
       }));
     }

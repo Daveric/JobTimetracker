@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
 using TimeJob.ViewModel;
@@ -19,7 +20,8 @@ namespace TimeJob.Data
 
     public static void LoadSettings(EmailViewModel viewModel)
     {
-      if (!File.Exists(SettingsFile)) return;
+      if (!File.Exists(SettingsFile))
+        EnsureSettings(SettingsFile);
       var xmlDoc = XDocument.Load(SettingsFile);
       if (xmlDoc.Root == null) return;
       var properties = xmlDoc.Root.Elements("Properties");
@@ -43,7 +45,8 @@ namespace TimeJob.Data
 
     public static void LoadConfiguration(MainViewModel viewModel)
     {
-      if (!File.Exists(SettingsFile)) return;
+      if (!File.Exists(SettingsFile))
+        EnsureSettings(SettingsFile);
       var xmlDoc = XDocument.Load(SettingsFile);
       if (xmlDoc.Root == null) return;
       var properties = xmlDoc.Root.Elements("Properties");
@@ -313,8 +316,17 @@ namespace TimeJob.Data
     {
       var fileInfo = new FileInfo(path);
 
-      if (!Directory.Exists(fileInfo.DirectoryName))
-        Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
+      if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
+      Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
+      File.Create(path).Dispose();
+    }
+
+    public static void EnsureSettings(string path)
+    {
+      var fileInfo = new FileInfo(path);
+      if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
+      Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
+      File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\Data\Settings.xml"), path);
     }
 
     #endregion Functions
