@@ -7,6 +7,7 @@ using System.Reflection;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
 using TimeJob.Data;
@@ -496,15 +497,17 @@ namespace TimeJob.ViewModel
     public DateTime? GetFirstLoggingToMachine()
     {
       ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime firstLogon);
-      var c = new PrincipalContext(ContextType.Machine, Environment.MachineName);
-      var uc = UserPrincipal.FindByIdentity(c, Environment.UserName);
-      if (uc.LastLogon > firstLogon)
+      var eventLogItem = new EventLog("Security");
+      var sev = eventLogItem.Entries.Cast<EventLogEntry>().Where(ev => (ev.InstanceId == 4624) && ev.TimeGenerated.ToShortDateString().Equals(DateTime.Today.ToShortDateString()));
+      sev.OrderByDescending(a => a.TimeGenerated);
+      var logon = sev.First().TimeGenerated;
+      if (logon > firstLogon)
       {
         return firstLogon;
       }
       else
       {
-        return uc.LastLogon;
+        return logon;
       }
     }
 
