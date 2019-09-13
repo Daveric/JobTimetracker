@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 
-namespace TimeJob.ViewModel
+namespace TimeJobTracker.ViewModel
 {
   public class ImportCsv
   {
@@ -40,7 +40,7 @@ namespace TimeJob.ViewModel
         {
           string[] fields = tfp.ReadFields();
 
-          for (int i = 0; i < fields.Count(); i++)
+          for (var i = 0; i < fields.Count(); i++)
           {
             if (firstRowContainsFieldNames)
               result.Columns.Add(fields[i]);

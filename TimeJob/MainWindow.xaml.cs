@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using TimeJob.ViewModel;
+using TimeJobTracker.ViewModel;
 
-namespace TimeJob
+namespace TimeJobTracker
 {
   public partial class MainWindow
   {

@@ -1,9 +1,8 @@
-﻿using System.Windows;
-using TimeJob.ViewModel;
+﻿using TimeJobTracker.ViewModel;
 
-namespace TimeJob
+namespace TimeJobTracker
 {
-  public partial class EmailWindow : Window
+  public partial class EmailWindow
   {
     public EmailWindow()
     {

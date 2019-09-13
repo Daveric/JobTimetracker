@@ -4,22 +4,13 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
-using TimeJob.Data;
+using TimeJobTracker.Data;
 
-namespace TimeJob.ViewModel
+namespace TimeJobTracker.ViewModel
 {
   public class EmailViewModel : ViewModelBase
   {
     #region Fields
-    [System.Runtime.InteropServices.DllImport("User32.dll")]
-    private static extern bool SetForegroundWindow(IntPtr handle);
-
-    [System.Runtime.InteropServices.DllImport("User32.dll")]
-    private static extern bool ShowWindow(IntPtr handle, int nCmdShow);
-
-    [System.Runtime.InteropServices.DllImport("User32.dll")]
-    private static extern bool IsIconic(IntPtr handle);
-
     //private static readonly int port = 587;
 
     #endregion Fields
@@ -127,7 +118,7 @@ namespace TimeJob.ViewModel
           return;
         }
         _selectedEmail = index > 0 ? EmailContacts[index] : EmailContacts[0];
-        RaisePropertyChanged("SelectedEmail");
+        RaisePropertyChanged($"SelectedEmail");
       }
     }
 
@@ -154,11 +145,11 @@ namespace TimeJob.ViewModel
         EmailContacts.Add(EmailContact);
         SelectedEmail = EmailContact;
         EmailContact = string.Empty;
-        RaisePropertyChanged("SelectedEmail");
+        RaisePropertyChanged($"SelectedEmail");
       }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message, Properties.Resources.Warning);
+        MessageBox.Show(e.Message, TimeJobTracker.Properties.Resources.Warning);
         throw;
       }
     }

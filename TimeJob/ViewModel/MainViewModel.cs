@@ -10,43 +10,35 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
-using TimeJob.Data;
-using System.DirectoryServices.AccountManagement;
+using TimeJobTracker.Data;
 using System.Media;
 using System.Text;
 using System.Windows.Media;
 using System.Drawing;
+using System.Diagnostics.Eventing.Reader;
+using System.Windows.Forms.VisualStyles;
+using DevExpress.Data.WizardFramework;
 
-namespace TimeJob.ViewModel
+namespace TimeJobTracker.ViewModel
 {
   public class MainViewModel : ViewModelBase
   {
-
     #region Fields
-
-    [System.Runtime.InteropServices.DllImport("User32.dll")]
-    private static extern bool SetForegroundWindow(IntPtr handle);
-
-    [System.Runtime.InteropServices.DllImport("User32.dll")]
-    private static extern bool ShowWindow(IntPtr handle, int nCmdShow);
-
-    [System.Runtime.InteropServices.DllImport("User32.dll")]
-    private static extern bool IsIconic(IntPtr handle);
-
+   
     private static readonly string soundPath = @"..\..\SoundFiles\";
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;
 
-    private static string timeLoggingFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      @"TimeJobTracking\Data\TimeLogging.csv");
+    private static string TimeLoggingFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+      @"TimeJobTracking\TimeLogging.csv");
 
     private bool _isExit = false;
 
     #endregion Fields
 
-        #region Constructor
+    #region Constructor
 
-        public MainViewModel()
+    public MainViewModel()
     {
       DataAccess.LoadConfiguration(this);
 
@@ -118,7 +110,7 @@ namespace TimeJob.ViewModel
             else
               _workingDaysPerWeek = value;
 
-        RaisePropertyChanged();
+            RaisePropertyChanged();
       } 
     }
 
@@ -273,6 +265,7 @@ namespace TimeJob.ViewModel
         RaisePropertyChanged("DisplayDataCSV");
       }
     }
+
     public Visibility DisplayConfiguration
     {
       get => DisplayConfig ? Visibility.Visible : Visibility.Hidden;
@@ -497,18 +490,12 @@ namespace TimeJob.ViewModel
     public DateTime? GetFirstLoggingToMachine()
     {
       ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime firstLogon);
-      var eventLogItem = new EventLog("Security");
-      var sev = eventLogItem.Entries.Cast<EventLogEntry>().Where(ev => (ev.InstanceId == 4624) && ev.TimeGenerated.ToShortDateString().Equals(DateTime.Today.ToShortDateString()));
-      sev.OrderByDescending(a => a.TimeGenerated);
-      var logon = sev.First().TimeGenerated;
-      if (logon > firstLogon)
-      {
-        return firstLogon;
-      }
-      else
-      {
-        return logon;
-      }
+      var eventLogItem = new EventLogReader("Security");
+      var sev = eventLogItem.ReadEvent();//.Properties..Where(ev => (ev.InstanceId == 4624) && ev.TimeGenerated.ToShortDateString().Equals(DateTime.Today.ToShortDateString()));
+      //sev.OrderByDescending(a => a.TimeGenerated);
+      //var logon = sev.First().TimeGenerated;
+      var logon = StartTime;
+      return logon > firstLogon ? firstLogon : logon;
     }
 
     private void UpdateTimers()
@@ -537,23 +524,23 @@ namespace TimeJob.ViewModel
       {
         ColorTime = new SolidColorBrush(Colors.Black);
         _notifyIcon.Icon = new Icon("../../Images/clock.ico");
-            }
+      }
       RaisePropertyChanged("ColorTime");
     }
 
     private void ShowPopUpDialog(TimeSpan timeToGo, TimeSpan timeToGoMaximum)
     {
-      if (((TimeSpan.Compare(timeToGo, TimeSpan.Zero) == 1) && (timeToGo.TotalSeconds == 15)) || 
-          ((TimeSpan.Compare(timeToGoMaximum, TimeSpan.Zero) == 1) && (timeToGoMaximum.TotalSeconds == 15)))
+      if (((TimeSpan.Compare(timeToGo, TimeSpan.Zero) != 1) || (!(Math.Abs(timeToGo.TotalSeconds - 15) < 0))) &&
+          ((TimeSpan.Compare(timeToGoMaximum, TimeSpan.Zero) != 1) ||
+           (!(Math.Abs(timeToGoMaximum.TotalSeconds - 15) < 0)))) return;
+      var win = new PopUpWindow
       {
-        var win = new PopUpWindow();
-        win.DataContext = this;
-        if (Application.Current.Windows.OfType<Window>().Any(w => w.Name.Equals("PopUpWindow")))
-        {
-          win.Show();
-        }
-        win.Show();
-      }
+          Name = "PopUpWindow",
+          DataContext = this
+      };
+      var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow") && w.IsVisible);
+      wnd?.Close();
+      win.Show();
     }
 
     private void CreateContextMenu()
@@ -567,6 +554,7 @@ namespace TimeJob.ViewModel
     private void ExitApplication()
     {
       _isExit = true;
+      SaveDataOnCSVFile(_timeLogFileLocation);
       Application.Current.Shutdown();
       _notifyIcon.Dispose();
       _notifyIcon = null;
@@ -577,15 +565,11 @@ namespace TimeJob.ViewModel
       if (Application.Current.MainWindow != null && Application.Current.MainWindow.IsVisible)
       {
         if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-        {
           Application.Current.MainWindow.WindowState = WindowState.Normal;
-        }
         Application.Current.MainWindow.Activate();
       }
       else
-      {
         Application.Current.MainWindow?.Show();
-      }
     }
 
     private void InitGeneralSettings()
@@ -707,7 +691,7 @@ namespace TimeJob.ViewModel
       {
         if (!File.Exists(fileName) || (fileName == null))
         {
-          fileName = timeLoggingFile;
+          fileName = TimeLoggingFile;
           DataAccess.EnsureDirectory(fileName);
         }
 

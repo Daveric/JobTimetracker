@@ -1,4 +1,4 @@
-﻿namespace TimeJob
+﻿namespace TimeJobTracker
 {
   public static class Constants
   {

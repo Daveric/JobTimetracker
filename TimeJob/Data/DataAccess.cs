@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Windows;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using TimeJob.ViewModel;
+using TimeJobTracker.ViewModel;
 
-namespace TimeJob.Data
+namespace TimeJobTracker.Data
 {
   public class DataAccess
   {
     #region Properties
 
     private static string SettingsFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      @"TimeJobTracking\Data\Settings.xml");
+      @"TimeJobTracking\Settings.xml");
 
     #endregion Properties
 
@@ -315,13 +315,16 @@ namespace TimeJob.Data
     public static void EnsureDirectory(string path)
     {
       var fileInfo = new FileInfo(path);
-
       if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
       Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
       File.Create(path).Dispose();
+
+      var line = new StringBuilder();
+      line.AppendLine("Date,Start,End,Remark (!! only one line !!)");
+      File.WriteAllText(path, line.ToString());
     }
 
-    public static void EnsureSettings(string path)
+    private static void EnsureSettings(string path)
     {
       var fileInfo = new FileInfo(path);
       if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;

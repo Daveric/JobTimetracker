@@ -1,23 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
+using System.Threading;
 using System.Windows;
 
-namespace TimeJob
+namespace TimeJobTracker
 {
+  /// <inheritdoc>
+  ///   <cref></cref>
+  /// </inheritdoc>
   /// <summary>
   /// Interaction logic for App.xaml
   /// </summary>
-  public partial class App : ISingleInstanceApp
+  public partial class App
   {
-    private const string Unique = "Job Time Tracker";
+    private const string AppGuid = "c0a76b5a-12ab-45c5-b9d9-d693faa6e7b9";
 
     protected override void OnStartup(StartupEventArgs e)
     {
       base.OnStartup(e);
-
-      MainWindow = new MainWindow();
+      MainWindow  = new MainWindow();
       MainWindow.Closing += MainWindow_Closing;
     }
 
@@ -30,33 +31,18 @@ namespace TimeJob
     [STAThread]
     public static void Main()
     {
-      if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
+      using (var mutex = new Mutex(false, "Global\\" + AppGuid))
       {
+        if (!mutex.WaitOne(0, false))
+        {
+          MessageBox.Show("Instance already running");
+          return;
+        }
+
         var application = new App();
         application.InitializeComponent();
         application.Run();
-
-        // Allow single instance code to perform cleanup operations
-        SingleInstance<App>.Cleanup();
       }
     }
-
-    #region ISingleInstanceApp Members
-
-    public bool SignalExternalCommandLineArgs(IList<string> args)
-    {
-      // Bring window to foreground
-      var mainWindow = MainWindow;
-      if (mainWindow != null && mainWindow.WindowState == WindowState.Minimized)
-      {
-        if (MainWindow != null) MainWindow.WindowState = WindowState.Normal;
-      }
-
-      MainWindow?.Activate();
-
-      return true;
-    }
-
-    #endregion ISingleInstanceApp Members
   }
 }
