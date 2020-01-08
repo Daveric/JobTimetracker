@@ -7,7 +7,6 @@ using System.Reflection;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
 using TimeJobTracker.Data;
@@ -15,9 +14,7 @@ using System.Media;
 using System.Text;
 using System.Windows.Media;
 using System.Drawing;
-using System.Diagnostics.Eventing.Reader;
-using System.Windows.Forms.VisualStyles;
-using DevExpress.Data.WizardFramework;
+using System.DirectoryServices.AccountManagement;
 
 namespace TimeJobTracker.ViewModel
 {
@@ -363,7 +360,7 @@ namespace TimeJobTracker.ViewModel
       WorkingHoursPerWeek = 40;
       MinutesBreak = 30;
       MinutesAlert = 60;
-      _timeLogFileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"TimeJobTracking\Data\TimeLogging.csv");
+      _timeLogFileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"TimeJobTracking\TimeLogging.csv");
       ChargeSoundFiles();
 
       RaisePropertyChanged("TimeLogFileLocationName");
@@ -489,13 +486,11 @@ namespace TimeJobTracker.ViewModel
 
     public DateTime? GetFirstLoggingToMachine()
     {
-      ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime firstLogon);
-      var eventLogItem = new EventLogReader("Security");
-      var sev = eventLogItem.ReadEvent();//.Properties..Where(ev => (ev.InstanceId == 4624) && ev.TimeGenerated.ToShortDateString().Equals(DateTime.Today.ToShortDateString()));
-      //sev.OrderByDescending(a => a.TimeGenerated);
-      //var logon = sev.First().TimeGenerated;
-      var logon = StartTime;
-      return logon > firstLogon ? firstLogon : logon;
+      ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime csvLogon);
+      PrincipalContext c = new PrincipalContext(ContextType.Machine, Environment.MachineName);
+      UserPrincipal uc = UserPrincipal.FindByIdentity(c, System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+      var logon = uc.LastLogon;
+      return logon > csvLogon ? csvLogon : logon;
     }
 
     private void UpdateTimers()
