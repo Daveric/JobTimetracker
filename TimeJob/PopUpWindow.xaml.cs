@@ -13,7 +13,9 @@ namespace TimeJobTracker
         Dispatcher?.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() =>
         {
           var workingArea = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
-          var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
+          var compositionTarget = PresentationSource.FromVisual(this)?.CompositionTarget;
+          if (compositionTarget == null) return;
+          var transform = compositionTarget.TransformFromDevice;
           var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
 
           Left = corner.X - ActualWidth - 10;

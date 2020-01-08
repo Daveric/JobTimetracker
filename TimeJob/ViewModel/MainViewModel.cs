@@ -525,17 +525,19 @@ namespace TimeJobTracker.ViewModel
 
     private void ShowPopUpDialog(TimeSpan timeToGo, TimeSpan timeToGoMaximum)
     {
-      if (((TimeSpan.Compare(timeToGo, TimeSpan.Zero) != 1) || (!(Math.Abs(timeToGo.TotalSeconds - 15) < 0))) &&
-          ((TimeSpan.Compare(timeToGoMaximum, TimeSpan.Zero) != 1) ||
-           (!(Math.Abs(timeToGoMaximum.TotalSeconds - 15) < 0)))) return;
-      var win = new PopUpWindow
+      if ((timeToGo.TotalSeconds >= 0) && (timeToGo.TotalSeconds <= 15) || (timeToGoMaximum.TotalSeconds >= 0) && (timeToGoMaximum.TotalSeconds <= 15))
       {
+        var win = new PopUpWindow
+        {
           Name = "PopUpWindow",
           DataContext = this
-      };
-      var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow") && w.IsVisible);
-      wnd?.Close();
-      win.Show();
+        };
+        var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow") && w.IsVisible);
+        if (wnd == null)
+        {
+          win.Show();
+        }
+      }
     }
 
     private void CreateContextMenu()
