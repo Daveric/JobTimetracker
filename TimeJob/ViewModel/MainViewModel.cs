@@ -671,7 +671,7 @@ namespace TimeJobTracker.ViewModel
           }
         }
 
-        var Start = StartTime.ToString(@"h:mm:ss tt");
+        var Start = _startTime.ToString(@"h:mm:ss tt");
         var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
         csv.AppendLine(newLine);
 

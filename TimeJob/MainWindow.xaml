@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         x:Class="TimeJobTracker.MainWindow" x:Name="JobTime"
         mc:Ignorable="d"
         Title="ITWORKS® JobTime Record" FontSize="13"
@@ -86,37 +86,34 @@
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
           <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15" ><Run Text="Break Time:  " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
           <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15" ><Run Text="Alert Time:  " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
           <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" Header="Start Time">
-            <dxe:DateEdit Margin="5" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Mask="HH:mm:ss" MaskUseAsDisplayFormat="True" FontSize="16"
-                          EditValue="{Binding StartTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowDefaultButton="False" AllowSpinOnMouseWheel="True" HorizontalContentAlignment="Center">
-              <dxe:ButtonEdit.Buttons>
-                <dxe:SpinButtonInfo IsDefaultButton="True" ></dxe:SpinButtonInfo>
-              </dxe:ButtonEdit.Buttons>
-            </dxe:DateEdit>
+            <xctk:DateTimeUpDown Height="25" VerticalAlignment="Center" HorizontalAlignment="Stretch" Format="Custom" FormatString="HH:mm:ss " FontSize="16" 
+                                 Value="{Binding StartTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </xctk:DateTimeUpDown>
           </GroupBox>
           <GroupBox Grid.Row="0" Grid.Column="1" Margin="5" Header="Time Now">
-            <Label Margin="5" FontSize="16" VerticalAlignment="Center" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeNow, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label FontSize="16" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding TimeNow, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="1" Grid.Column="0" Margin="5" Header="Regular End Time">
-            <Label Margin="5" FontSize="16" Height="25" HorizontalAlignment="Stretch" Content="{Binding RegularEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label FontSize="16" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding RegularEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="1" Grid.Column="1" Margin="5" Header="Maximum End Time">
-            <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding MaximumEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label FontSize="16" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding MaximumEndTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
           </GroupBox>
           <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" Header="Time To Go">
-            <Label Margin="5" FontSize="16" VerticalAlignment="top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                   Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label FontSize="16" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
           </GroupBox>
           <GroupBox Grid.Row="2" Grid.Column="1" Margin="5" Header="Time To Go Max.">
-            <Label Margin="5" FontSize="16" VerticalAlignment="Top" Height="25" HorizontalAlignment="Stretch" Content="{Binding TimeToGoMaximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                   Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label FontSize="16" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding TimeToGoMaximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
           </GroupBox>
         </Grid>
         <Button Grid.Row="2" Width="140" Height="25" Content="Minimize to Tray" HorizontalAlignment="Center" Margin="0,5,0,15"  Click="CmdMinimizeToTray"/>
@@ -168,10 +165,10 @@
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" HorizontalAlignment="Right" Content="Hours Per Week" FontSize="13" />
                 <Label Grid.Column="2" HorizontalAlignment="Right" Content="Days Per Week" FontSize="13" />
-                <dxe:SpinEdit Grid.Column="1" Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingHoursPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
-                              HorizontalAlignment="Center" Margin="5,2" Width="60" Height="25" IsFloatValue="False" />
-                <dxe:SpinEdit Grid.Column="3" Increment="1" MinValue="0" MaxValue="60" Value="{Binding WorkingDaysPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AllowSpinOnMouseWheel="True"
-                              HorizontalAlignment="Center" Margin="5,2" Width="60" Height="25" IsFloatValue="False" />
+                <xctk:IntegerUpDown Grid.Column="1" Text="{Binding WorkingHoursPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                    AllowSpin="True" HorizontalAlignment="Center" Margin="5,2" Width="60" Height="25" />
+                <xctk:IntegerUpDown Grid.Column="3" Text="{Binding WorkingDaysPerWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    AllowSpin="True" HorizontalAlignment="Center" Margin="5,2" Width="60" Height="25" />
               </Grid>
             </GroupBox>
             <Grid Grid.Row="1">
@@ -184,20 +181,16 @@
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
               <Label Grid.Row="0" Grid.Column="0" Content="Lunch Break" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
-              <dxe:TrackBarEdit Name="BreakSlider" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="10">
-                <dxe:TrackBarEdit.StyleSettings>
-                  <dxe:TrackBarZoomStyleSettings></dxe:TrackBarZoomStyleSettings>
-                </dxe:TrackBarEdit.StyleSettings>
-              </dxe:TrackBarEdit>
+              <Slider Name="BreakSlider" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center"
+                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            TickFrequency="5" >
+              </Slider>
               <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Break Time: " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
               <Label Grid.Row="1" Grid.Column="0" Content="Alert" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
-              <dxe:TrackBarEdit Name="AlertSlider" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center" FontSize="20"
-                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesAlert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="10" >
-                <dxe:TrackBarEdit.StyleSettings>
-                  <dxe:TrackBarZoomStyleSettings></dxe:TrackBarZoomStyleSettings>
-                </dxe:TrackBarEdit.StyleSettings>
-              </dxe:TrackBarEdit>
+              <Slider Name="AlertSlider" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center" FontSize="20"
+                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesAlert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            TickFrequency="10" >
+               </Slider>
               <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Alert Time: " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
               <GroupBox Grid.Row="0" Grid.Column="1" Header="Sound Files" HorizontalAlignment="Stretch">
                 <Grid>

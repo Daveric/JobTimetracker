@@ -15,7 +15,8 @@
                     <Bold>Time Tracker</Bold><LineBreak /><LineBreak />
                     Remaining Time:
                 </TextBlock>
-                <Label Margin="5" FontSize="16" VerticalAlignment="top" Height="25" Width="140" HorizontalAlignment="Center" Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                <Label Margin="5" FontSize="16" Height="Auto" Width="140" HorizontalAlignment="Center" 
+                       Content="{Binding TimeToGo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        Foreground="{Binding ColorTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Button Content="Close" Width="100" HorizontalAlignment="Center" Margin="5" Click="CmdClose" />
             </StackPanel>
