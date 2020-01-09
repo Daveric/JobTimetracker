@@ -45,7 +45,7 @@ namespace TimeJobTracker.Data
 
     public static void LoadConfiguration(MainViewModel viewModel)
     {
-      if (!File.Exists(SettingsFile))
+      if (!File.Exists(SettingsFile) || File.Exists(SettingsFile) && new FileInfo(SettingsFile).Length == 0)
         EnsureSettings(SettingsFile);
       var xmlDoc = XDocument.Load(SettingsFile);
       if (xmlDoc.Root == null) return;
@@ -327,9 +327,12 @@ namespace TimeJobTracker.Data
     private static void EnsureSettings(string path)
     {
       var fileInfo = new FileInfo(path);
-      if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
-      Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
-      File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\Data\Settings.xml"), path);
+      if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString()) && new FileInfo(SettingsFile).Length != 0) return;
+      if (!Directory.Exists(fileInfo.DirectoryName))
+        Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
+      if (!File.Exists(fileInfo.ToString()))
+        File.Create(path).Dispose();
+      File.WriteAllText(path,Properties.Resources.Settings);
     }
 
     #endregion Functions

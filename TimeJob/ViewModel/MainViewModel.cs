@@ -7,6 +7,7 @@ using System.Reflection;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
 using TimeJobTracker.Data;
@@ -22,7 +23,7 @@ namespace TimeJobTracker.ViewModel
   {
     #region Fields
    
-    private static readonly string soundPath = @"..\..\SoundFiles\";
+    private static readonly string soundPath = @"\SoundFiles\";
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;
 
@@ -37,6 +38,7 @@ namespace TimeJobTracker.ViewModel
 
     public MainViewModel()
     {
+      Debugger.Launch();
       DataAccess.LoadConfiguration(this);
 
       _notifyIcon = new System.Windows.Forms.NotifyIcon();
@@ -508,17 +510,17 @@ namespace TimeJobTracker.ViewModel
       if (TimeSpan.Compare(TimeSpan.Zero, timeToGo) == 1 && TimeSpan.Compare(timeToGo, -_timeAlert) == 1 && !_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Orange);
-        _notifyIcon.Icon = new Icon("../../Images/warningclock.ico");
+        _notifyIcon.Icon = Properties.Resources.warningclock;
       }
       else if (TimeSpan.Compare(-_timeAlert, timeToGo) == 1 || TimeSpan.Compare(-_timeAlert, timeToGo) == 0 && !_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Red);
-        _notifyIcon.Icon = new Icon("../../Images/alertclock.ico");
+        _notifyIcon.Icon = Properties.Resources.alertclock;
       }
       else if (!_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Black);
-        _notifyIcon.Icon = new Icon("../../Images/clock.ico");
+        _notifyIcon.Icon = Properties.Resources.clock;
       }
       RaisePropertyChanged("ColorTime");
     }
@@ -598,7 +600,7 @@ namespace TimeJobTracker.ViewModel
     {
       SoundsDict = new Dictionary<string, string>();
       SoundsList = new List<string>();
-      var path = Path.Combine(AssemblyDirectory, soundPath);
+      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, soundPath);
       string[] files = Directory.GetFiles(path, "*.wav");
       foreach (var sound in files)
       {

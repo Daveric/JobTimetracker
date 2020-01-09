@@ -61,11 +61,63 @@ namespace TimeJobTracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon alertclock {
+            get {
+                object obj = ResourceManager.GetObject("alertclock", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon clock {
+            get {
+                object obj = ResourceManager.GetObject("clock", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;CommonProperties version=&quot;1&quot;&gt;
+        ///  &lt;Properties&gt;
+        ///    &lt;Properties name=&quot;UserDetails&quot;&gt;
+        ///      &lt;Property name=&quot;User&quot;&gt;&lt;/Property&gt;
+        ///      &lt;Property name=&quot;Password&quot;&gt;&lt;/Property&gt;
+        ///    &lt;/Properties&gt;
+        ///    &lt;Properties name=&quot;Contacts&quot;&gt;
+        ///      &lt;Property name=&quot;Contact&quot;&gt;&lt;/Property&gt;
+        ///    &lt;/Properties&gt;
+        ///    &lt;Properties name=&quot;EmailDetails&quot;&gt;
+        ///      &lt;Property name=&quot;Subject&quot;&gt;&lt;/Property&gt;
+        ///      &lt;Property name=&quot;FileAttachment&quot;&gt;&lt;/Property&gt;
+        ///      &lt;Property name=&quot;BodyText&quot;&gt;&lt;/P [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
         internal static string Warning {
             get {
                 return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon warningclock {
+            get {
+                object obj = ResourceManager.GetObject("warningclock", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }

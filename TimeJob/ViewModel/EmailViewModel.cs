@@ -149,7 +149,7 @@ namespace TimeJobTracker.ViewModel
       }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message, TimeJobTracker.Properties.Resources.Warning);
+        MessageBox.Show(e.Message, Properties.Resources.Warning);
         throw;
       }
     }
