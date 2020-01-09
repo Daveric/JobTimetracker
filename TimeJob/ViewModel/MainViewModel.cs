@@ -38,7 +38,7 @@ namespace TimeJobTracker.ViewModel
 
     public MainViewModel()
     {
-      Debugger.Launch();
+      //Debugger.Launch();
       DataAccess.LoadConfiguration(this);
 
       _notifyIcon = new System.Windows.Forms.NotifyIcon();
