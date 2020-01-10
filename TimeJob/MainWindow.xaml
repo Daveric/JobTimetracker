@@ -32,12 +32,12 @@
     <DockPanel Grid.Row="0">
       <Menu DockPanel.Dock="Top" Background="AliceBlue" BorderBrush="SteelBlue" BorderThickness="1" HorizontalAlignment="Stretch" FontFamily="Segoe UI" FontSize="13">
         <MenuItem Header="_File">
-          <MenuItem Header="_Configure" Command="{Binding CmdConfig}" CommandParameter="{Binding ElementName=JobTime}">
+          <MenuItem Header="_Settings" Command="{Binding CmdConfig}" CommandParameter="{Binding ElementName=JobTime}">
             <MenuItem.Icon>
               <Image Source="Images/timerconfig.png" />
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="_Close" Command="{Binding CmdCloseWindow}" CommandParameter="{Binding ElementName=JobTime}">
+          <MenuItem Header="_Exit" Command="{Binding CmdCloseWindow}" CommandParameter="{Binding ElementName=JobTime}">
             <MenuItem.Icon>
               <Image Source="Images/close.png" />
             </MenuItem.Icon>
@@ -180,18 +180,32 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
-              <Label Grid.Row="0" Grid.Column="0" Content="Lunch Break" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
-              <Slider Name="BreakSlider" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            TickFrequency="5" >
-              </Slider>
-              <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Break Time: " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
-              <Label Grid.Row="1" Grid.Column="0" Content="Alert" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
-              <Slider Name="AlertSlider" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center" FontSize="20"
-                            IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesAlert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            TickFrequency="10" >
-               </Slider>
-              <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" ><Run Text="Alert Time: " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
+              <Grid Grid.Row="0" Grid.Column="0">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*"/>
+                  <RowDefinition Height="*"/>
+                  <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Lunch Break" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
+                <Slider Name="BreakSlider" Grid.Row="1" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center"
+                        IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        TickFrequency="5" >
+                </Slider>
+                <TextBlock Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15,0" ><Run Text="Break Time: " /><Run Text="{Binding MinutesBreakText, Mode=OneWay}" /></TextBlock>
+              </Grid>
+              <Grid Grid.Row="1" Grid.Column="0">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*"/>
+                  <RowDefinition Height="*"/>
+                  <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Alert" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" Margin="10" />
+                <Slider Name="AlertSlider" Grid.Row="1" HorizontalAlignment="Stretch" Margin="15" VerticalAlignment="Center" FontSize="20"
+                              IsSnapToTickEnabled="True" Minimum="0" Maximum="90" Value="{Binding MinutesAlert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                              TickFrequency="10" >
+                 </Slider>
+                <TextBlock Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15,0" ><Run Text="Alert Time: " /><Run Text="{Binding MinutesAlertText, Mode=OneWay}"/></TextBlock>
+              </Grid>
               <GroupBox Grid.Row="0" Grid.Column="1" Header="Sound Files" HorizontalAlignment="Stretch">
                 <Grid>
                   <Grid.RowDefinitions>

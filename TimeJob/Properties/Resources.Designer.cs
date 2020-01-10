@@ -81,6 +81,24 @@ namespace TimeJobTracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream KLAXXON {
+            get {
+                return ResourceManager.GetStream("KLAXXON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream RunForrest {
+            get {
+                return ResourceManager.GetStream("RunForrest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
         ///&lt;CommonProperties version=&quot;1&quot;&gt;
         ///  &lt;Properties&gt;
@@ -99,6 +117,15 @@ namespace TimeJobTracker.Properties {
         internal static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream Trumpet {
+            get {
+                return ResourceManager.GetStream("Trumpet", resourceCulture);
             }
         }
         

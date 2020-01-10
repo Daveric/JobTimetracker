@@ -11,8 +11,7 @@ namespace TimeJobTracker.Data
   {
     #region Properties
 
-    private static string SettingsFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      @"TimeJobTracking\Settings.xml");
+    private static string SettingsFile => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\Settings.xml");
 
     #endregion Properties
 

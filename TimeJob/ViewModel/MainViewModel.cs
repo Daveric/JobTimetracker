@@ -4,12 +4,9 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
 using System.Media;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
@@ -26,8 +23,7 @@ namespace TimeJobTracker.ViewModel
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;
 
-    private static string TimeLoggingFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      @"TimeJobTracking\TimeLogging.csv");
+    private static string TimeLoggingFile => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\TimeLogging.csv");
 
     private bool _isExit = false;
 
@@ -37,7 +33,6 @@ namespace TimeJobTracker.ViewModel
 
     public MainViewModel()
     {
-      //Debugger.Launch();
       DataAccess.LoadConfiguration(this);
 
       _notifyIcon = new System.Windows.Forms.NotifyIcon();
@@ -150,17 +145,6 @@ namespace TimeJobTracker.ViewModel
     public string MaximumEndTime => _maximumEndTime.ToString("HH:mm:ss");
 
     public SolidColorBrush ColorTime { get; set; }
-
-    public static string AssemblyDirectory
-    {
-      get
-      {
-        string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-        UriBuilder uri = new UriBuilder(codeBase);
-        string path = Uri.UnescapeDataString(uri.Path);
-        return Path.GetDirectoryName(path);
-      }
-    }
 
     public string _timeLogFileLocation;
     private string _timeLogFileLocationName;
@@ -292,7 +276,7 @@ namespace TimeJobTracker.ViewModel
     private void CmdCloseWindowExecute(Window window)
     {
       DataAccess.SaveConfiguration(this);
-      window?.Close();
+      ExitApplication();
     }
 
     public RelayCommand CmdHideConfig { get; private set; }
@@ -311,8 +295,7 @@ namespace TimeJobTracker.ViewModel
     {
       var openFile = new OpenFileDialog
       {
-        Filter = "WAV files (*.wav)|*.wav",
-        DefaultExt = ".wav"
+        Filter = "All files (*.*)|*.*|MP3 files (*.mp3)|*.mp3|WAV files (*.wav)|*.wav"
       };
       if (openFile.ShowDialog() == true)
       {
@@ -444,7 +427,6 @@ namespace TimeJobTracker.ViewModel
         TimeToGoMaximum = timeToGoMaximum.ToString();
 
         UpdateTimersColor(timeToGo);
-
         ShowPopUpDialog(timeToGo, timeToGoMaximum);
       };
       timer.Start();
@@ -497,10 +479,7 @@ namespace TimeJobTracker.ViewModel
     public DateTime? GetFirstLoggingToMachine()
     {
       ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime csvLogon);
-      PrincipalContext c = new PrincipalContext(ContextType.Machine, Environment.MachineName);
-      UserPrincipal uc = UserPrincipal.FindByIdentity(c, System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-      var logon = uc.LastLogon;
-      return logon > csvLogon ? csvLogon : logon;
+      return csvLogon;
     }
 
     private void UpdateTimers()
@@ -535,16 +514,16 @@ namespace TimeJobTracker.ViewModel
 
     private void ShowPopUpDialog(TimeSpan timeToGo, TimeSpan timeToGoMaximum)
     {
-      if ((timeToGo.TotalSeconds >= 0) && (timeToGo.TotalSeconds <= 15) || (timeToGoMaximum.TotalSeconds >= 0) && (timeToGoMaximum.TotalSeconds <= 15))
+      if ((timeToGo.TotalSeconds > 13 && timeToGo.TotalSeconds < 16) || (timeToGoMaximum.TotalSeconds > 13 && timeToGoMaximum.TotalSeconds < 16))
       {
-        var win = new PopUpWindow
-        {
-          Name = "PopUpWindow",
-          DataContext = this
-        };
-        var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow") && w.IsVisible);
+        var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow"));
         if (wnd == null)
         {
+          var win = new PopUpWindow
+          {
+            Name = "PopUpWindow",
+            DataContext = this
+          };
           win.Show();
         }
       }
@@ -614,6 +593,19 @@ namespace TimeJobTracker.ViewModel
         Directory.CreateDirectory(path);
       }
 
+      using (Stream output = File.OpenWrite($"{path}\\Trumpet.wav"))
+      {
+        Properties.Resources.Trumpet.CopyTo(output);
+      }
+      using (Stream output = File.OpenWrite($"{path}\\KLAXXON.wav"))
+      {
+        Properties.Resources.KLAXXON.CopyTo(output);
+      }
+      using (Stream output = File.OpenWrite($"{path}\\RunForrest.wav"))
+      {
+        Properties.Resources.RunForrest.CopyTo(output);
+      }
+
       string[] files = Directory.GetFiles(path, "*.wav");
       if (files.Length == 0) return;
       foreach (var sound in files)
@@ -629,7 +621,6 @@ namespace TimeJobTracker.ViewModel
         RaisePropertyChanged("SoundsList");
       }
 
-      if (SoundsDict.Count < 2) return;
       SelectedAlertSound = SoundsDict.Keys.ElementAt(0);
       SelectedWarningSound = SoundsDict.Keys.ElementAt(1);
     }
@@ -673,7 +664,7 @@ namespace TimeJobTracker.ViewModel
       {
         var csv = new StringBuilder();
         var Date = DateTime.Today.ToString(@"d");
-        var End = _timeNow.ToString(@"h:mm:ss tt");
+        var End = _timeNow.ToString(@"HH:mm:ss tt");
         var Remark = string.Empty;
 
         IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -690,7 +681,7 @@ namespace TimeJobTracker.ViewModel
           }
         }
 
-        var Start = _startTime.ToString(@"h:mm:ss tt");
+        var Start = _startTime.ToString(@"HH:mm:ss tt");
         var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
         csv.AppendLine(newLine);
 
