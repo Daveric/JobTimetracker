@@ -1,29 +1,28 @@
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Windows.Threading;
-using System.Reflection;
-using GalaSoft.MvvmLight.Command;
-using System.Windows;
 using System.Data;
 using System.Diagnostics;
-using System.Linq;
-using Microsoft.Win32;
-using TimeJobTracker.Data;
-using System.Media;
-using System.Text;
-using System.Windows.Media;
-using System.Drawing;
 using System.DirectoryServices.AccountManagement;
+using System.IO;
+using System.Linq;
+using System.Media;
+using System.Reflection;
+using System.Text;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Threading;
+using TimeJobTracker.Data;
 
 namespace TimeJobTracker.ViewModel
 {
   public class MainViewModel : ViewModelBase
   {
     #region Fields
-   
-    private static readonly string soundPath = @"\SoundFiles\";
+
+    private static readonly string soundPath = @"SoundFiles\";
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;
 
@@ -77,11 +76,11 @@ namespace TimeJobTracker.ViewModel
       get => _timeNow.ToString(@"HH:mm:ss");
       set { _timeNow = Convert.ToDateTime(value); RaisePropertyChanged(); }
     }
-        
+
     public string TimeToGo
     {
       get => _timeToGo.ToString();
-      set { _timeToGo = TimeSpan.Parse(value); RaisePropertyChanged();}
+      set { _timeToGo = TimeSpan.Parse(value); RaisePropertyChanged(); }
     }
 
     public string TimeToGoMaximum
@@ -91,6 +90,7 @@ namespace TimeJobTracker.ViewModel
     }
 
     private int _workingHoursPerWeek;
+
     public int WorkingHoursPerWeek
     {
       get => _workingHoursPerWeek;
@@ -98,19 +98,21 @@ namespace TimeJobTracker.ViewModel
     }
 
     private int _workingDaysPerWeek;
+
     public int WorkingDaysPerWeek
     {
       get => _workingDaysPerWeek;
-      set {
-            if (value == 0)
-            {
-              CmdResetExecute();
-            }
-            else
-              _workingDaysPerWeek = value;
+      set
+      {
+        if (value == 0)
+        {
+          CmdResetExecute();
+        }
+        else
+          _workingDaysPerWeek = value;
 
-            RaisePropertyChanged();
-      } 
+        RaisePropertyChanged();
+      }
     }
 
     private TimeSpan _timeAlert;
@@ -118,9 +120,12 @@ namespace TimeJobTracker.ViewModel
     public double MinutesAlert
     {
       get => _timeAlert.TotalMinutes;
-      set { _timeAlert = TimeSpan.FromMinutes(value);
+      set
+      {
+        _timeAlert = TimeSpan.FromMinutes(value);
         UpdateTimers();
-        RaisePropertyChanged("MinutesAlertText");}
+        RaisePropertyChanged("MinutesAlertText");
+      }
     }
 
     public string MinutesAlertText => _timeAlert.ToString(@"hh\:mm");
@@ -130,7 +135,8 @@ namespace TimeJobTracker.ViewModel
     public double MinutesBreak
     {
       get => _timeLunchBreak.TotalMinutes;
-      set {
+      set
+      {
         _timeLunchBreak = TimeSpan.FromMinutes(value);
         UpdateTimers();
         RaisePropertyChanged("MinutesBreakText");
@@ -158,6 +164,7 @@ namespace TimeJobTracker.ViewModel
 
     public string _timeLogFileLocation;
     private string _timeLogFileLocationName;
+
     public string TimeLogFileLocationName
     {
       get => _timeLogFileLocationName;
@@ -170,7 +177,7 @@ namespace TimeJobTracker.ViewModel
       }
     }
 
-    public Dictionary<string,string> SoundsDict { get; set; }
+    public Dictionary<string, string> SoundsDict { get; set; }
     public List<string> SoundsList { get; set; }
 
     private string _alertSoundPath;
@@ -246,6 +253,7 @@ namespace TimeJobTracker.ViewModel
     }
 
     private bool _mininizeOnStartUp;
+
     public bool MinimizeOnStartUp
     {
       get => _mininizeOnStartUp;
@@ -269,6 +277,7 @@ namespace TimeJobTracker.ViewModel
     {
       get => DisplayConfig ? Visibility.Visible : Visibility.Hidden;
     }
+
     public Visibility DisplayDataCSV
     {
       get => DisplayConfig ? Visibility.Hidden : Visibility.Visible;
@@ -309,7 +318,7 @@ namespace TimeJobTracker.ViewModel
       {
         try
         {
-          File.Copy(openFile.FileName, Path.Combine(AssemblyDirectory, soundPath + Path.GetFileName(openFile.FileName)));
+          File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, soundPath + Path.GetFileName(openFile.FileName)));
           ChargeSoundFiles();
         }
         catch (Exception e)
@@ -362,7 +371,7 @@ namespace TimeJobTracker.ViewModel
       WorkingHoursPerWeek = 40;
       MinutesBreak = 30;
       MinutesAlert = 60;
-      _timeLogFileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"TimeJobTracking\TimeLogging.csv");
+      _timeLogFileLocation = TimeLoggingFile;
       ChargeSoundFiles();
 
       RaisePropertyChanged("TimeLogFileLocationName");
@@ -382,14 +391,12 @@ namespace TimeJobTracker.ViewModel
 
     private void CmdLanguageExecute()
     {
-
     }
 
     public RelayCommand CmdAbout { get; private set; }
 
     private void CmdAboutExecute()
     {
-
     }
 
     public RelayCommand CmdEditMail { get; private set; }
@@ -413,10 +420,11 @@ namespace TimeJobTracker.ViewModel
         TimeLogFileLocationName = Path.GetFullPath(openFileDialog.FileName);
       }
     }
+
     #endregion Commands
 
     #region Functions
-    
+
     private void StartTimer()
     {
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -427,7 +435,7 @@ namespace TimeJobTracker.ViewModel
     private void RemainingTimerToGo()
     {
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-      timer.Tick += (s,e) =>
+      timer.Tick += (s, e) =>
       {
         var timeToGo = _regularEndTime - _timeNow;
         TimeToGo = timeToGo.ToString();
@@ -438,13 +446,13 @@ namespace TimeJobTracker.ViewModel
         UpdateTimersColor(timeToGo);
 
         ShowPopUpDialog(timeToGo, timeToGoMaximum);
-      }; 
+      };
       timer.Start();
     }
 
     private void TimerWarning()
     {
-      var timer = new DispatcherTimer() {Interval = TimeSpan.FromSeconds(1) };
+      var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
         if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0 && SoundWarning)
@@ -475,7 +483,7 @@ namespace TimeJobTracker.ViewModel
           try
           {
             ActivateAlarm(_alertSoundPath);
-            MessageBox.Show("You raised the Alert time to work, you must go home","Alert",  MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            MessageBox.Show("You raised the Alert time to work, you must go home", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
           }
           catch (Exception ex)
           {
@@ -588,7 +596,7 @@ namespace TimeJobTracker.ViewModel
       CmdHideConfig = new RelayCommand(CmdHideConfigExecute);
       CmdAddSounds = new RelayCommand(CmdAddSoundsExecute);
       CmdTrackTime = new RelayCommand(CmdTrackTimeExecute);
-      CmdEditMail= new RelayCommand(CmdEditMailExecute);
+      CmdEditMail = new RelayCommand(CmdEditMailExecute);
 
       CmdReset = new RelayCommand(CmdResetExecute);
       CmdDeactivate = new RelayCommand(CmdDeactivateExecute);
@@ -601,25 +609,34 @@ namespace TimeJobTracker.ViewModel
       SoundsDict = new Dictionary<string, string>();
       SoundsList = new List<string>();
       var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, soundPath);
+      if (!Directory.Exists(path))
+      {
+        Directory.CreateDirectory(path);
+      }
+
       string[] files = Directory.GetFiles(path, "*.wav");
+      if (files.Length == 0) return;
       foreach (var sound in files)
       {
         SoundsDict.Add(Path.GetFileName(sound), Path.GetFullPath(sound));
         SoundsList.Add(Path.GetFileName(sound));
       }
+
       if (SoundsDict.Count >= 1)
       {
         SoundWarning = true;
         RaisePropertyChanged("SoundWarning");
+        RaisePropertyChanged("SoundsList");
       }
 
+      if (SoundsDict.Count < 2) return;
       SelectedAlertSound = SoundsDict.Keys.ElementAt(0);
       SelectedWarningSound = SoundsDict.Keys.ElementAt(1);
     }
 
     private void ActivateAlarm(string soundPath)
     {
-      var soundPlayer = new SoundPlayer{SoundLocation = soundPath};
+      var soundPlayer = new SoundPlayer { SoundLocation = soundPath };
       soundPlayer.Play();
     }
 
@@ -677,13 +694,14 @@ namespace TimeJobTracker.ViewModel
         var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
         csv.AppendLine(newLine);
 
-        File.WriteAllText(fileName,csv.ToString());
+        File.WriteAllText(fileName, csv.ToString());
       }
       catch (Exception ex)
       {
         MessageBox.Show(ex.Message, "Message", MessageBoxButton.OK, MessageBoxImage.Error);
       }
     }
+
     private void LoadCSVOnDataGridView(string fileName)
     {
       try
@@ -692,6 +710,8 @@ namespace TimeJobTracker.ViewModel
         {
           fileName = TimeLoggingFile;
           DataAccess.EnsureDirectory(fileName);
+          TimeLogFileLocationName = fileName;
+          RaisePropertyChanged("TimeLogFileLocationName");
         }
 
         var csv = new ImportCsv(fileName);
