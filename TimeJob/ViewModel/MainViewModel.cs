@@ -475,11 +475,12 @@ namespace TimeJobTracker.ViewModel
       };
       timer.Start();
     }
-
+    
     public DateTime? GetFirstLoggingToMachine()
     {
       ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime csvLogon);
-      return csvLogon;
+      var logInTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
+      return csvLogon < logInTime ? csvLogon: logInTime;
     }
 
     private void UpdateTimers()
