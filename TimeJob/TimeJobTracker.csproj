@@ -201,8 +201,8 @@
     <Resource Include="Images\reset.png" />
     <Resource Include="Images\help_about.png" />
     <Resource Include="Images\language.png" />
-    <None Include="Images\download.png" />
     <Resource Include="icon.ico" />
+    <Resource Include="Images\icon.png" />
     <Content Include="SoundFiles\Aoogah.wav" />
     <Content Include="SoundFiles\Disconnect.wav" />
     <Content Include="SoundFiles\Explosion.wav" />
