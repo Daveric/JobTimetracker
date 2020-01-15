@@ -275,7 +275,6 @@ namespace TimeJobTracker.ViewModel
 
     private void CmdCloseWindowExecute(Window window)
     {
-      DataAccess.SaveConfiguration(this);
       ExitApplication();
     }
 
@@ -476,7 +475,7 @@ namespace TimeJobTracker.ViewModel
       timer.Start();
     }
     
-    public DateTime? GetFirstLoggingToMachine()
+    private DateTime? GetFirstLoggingToMachine()
     {
       ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime csvLogon);
       var logInTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
@@ -538,10 +537,11 @@ namespace TimeJobTracker.ViewModel
       _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, e) => ExitApplication();
     }
 
-    private void ExitApplication()
+    public void ExitApplication()
     {
-      _isExit = true;
+      DataAccess.SaveConfiguration(this);
       SaveDataOnCSVFile(_timeLogFileLocation);
+      _isExit = true;
       Application.Current.Shutdown();
       _notifyIcon.Dispose();
       _notifyIcon = null;
