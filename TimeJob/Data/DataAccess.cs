@@ -319,7 +319,7 @@ namespace TimeJobTracker.Data
       File.Create(path).Dispose();
 
       var line = new StringBuilder();
-      line.AppendLine("Date,Start,End,Remark (!! only one line !!)");
+      line.AppendLine("Date,Start,End,Extra time worked,Remark (!! only one line !!)");
       File.WriteAllText(path, line.ToString());
     }
 

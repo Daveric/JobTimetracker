@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System;
 using System.Windows;
 using TimeJobTracker.ViewModel;
 
@@ -19,7 +19,7 @@ namespace TimeJobTracker
       Hide();
     }
 
-    protected override void OnClosing(CancelEventArgs e)
+    protected override void OnClosed(EventArgs e)
     {
       _vm.ExitApplication();
     }

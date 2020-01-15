@@ -666,6 +666,7 @@ namespace TimeJobTracker.ViewModel
         var csv = new StringBuilder();
         var Date = DateTime.Today.ToString(@"d");
         var End = _timeNow.ToString(@"HH:mm:ss tt");
+        var extraTimeWorked = _timeToGo < TimeSpan.Zero ? _timeNow - _regularEndTime : TimeSpan.Zero;
         var Remark = string.Empty;
 
         IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -683,7 +684,7 @@ namespace TimeJobTracker.ViewModel
         }
 
         var Start = _startTime.ToString(@"HH:mm:ss tt");
-        var newLine = string.Format("{0},{1},{2},{3}", Date, Start, End, Remark);
+        var newLine = string.Format("{0},{1},{2},{3},{4}", Date, Start, End, extraTimeWorked, Remark);
         csv.AppendLine(newLine);
 
         File.WriteAllText(fileName, csv.ToString());
