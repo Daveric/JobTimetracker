@@ -316,7 +316,6 @@ namespace TimeJobTracker.ViewModel
     {
       DataAccess.SaveConfiguration(this);
       DisplayConfig = false;
-      CmdTrackTimeExecute();
       SaveDataOnCSVFile(_timeLogFileLocation);
       LoadCSVOnDataGridView(_timeLogFileLocation);
       RaisePropertyChanged("DataCSV");
@@ -420,10 +419,18 @@ namespace TimeJobTracker.ViewModel
       timer.Tick += (s, e) =>
       {
         var timeToGo = _regularEndTime - _timeNow;
-        TimeToGo = timeToGo.ToString();
+        var signToGo = "";
+        if (timeToGo < TimeSpan.Zero)
+          signToGo = "-";
+
+        TimeToGo = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGo, Math.Abs(timeToGo.Hours), Math.Abs(timeToGo.Minutes), Math.Abs(timeToGo.Seconds));
 
         var timeToGoMaximum = _maximumEndTime - _timeNow;
-        TimeToGoMaximum = timeToGoMaximum.ToString();
+        var signToGoMaximum = "";
+        if (timeToGoMaximum < TimeSpan.Zero)
+          signToGoMaximum = "-";
+        else
+          TimeToGoMaximum = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGoMaximum, Math.Abs(timeToGoMaximum.Hours), Math.Abs(timeToGoMaximum.Minutes), Math.Abs(timeToGoMaximum.Seconds));
 
         UpdateTimersColor(timeToGo);
         ShowPopUpDialog(timeToGo, timeToGoMaximum);
@@ -641,7 +648,11 @@ namespace TimeJobTracker.ViewModel
     public DataTable DataCSV
     {
       get => _dataCSV;
-      set { _dataCSV = value; RaisePropertyChanged(); }
+      set
+      {
+        _dataCSV = value;
+        RaisePropertyChanged();
+      }
     }
 
     private void ChekDataCSV(string todayDate, out DateTime value)
@@ -680,6 +691,10 @@ namespace TimeJobTracker.ViewModel
           if ((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
           {
             csv.AppendLine(fieldLine);
+          }
+          else if (DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
+          {
+            Remark = fields.Last();
           }
         }
 

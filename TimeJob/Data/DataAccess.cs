@@ -80,7 +80,7 @@ namespace TimeJobTracker.Data
       using (var writer = XmlWriter.Create(SettingsFile, new XmlWriterSettings()
       {
         Indent = true,
-        IndentChars = "  ",
+        IndentChars = "  "
       }))
       {
         writer.WriteStartDocument(true);
@@ -319,7 +319,7 @@ namespace TimeJobTracker.Data
       File.Create(path).Dispose();
 
       var line = new StringBuilder();
-      line.AppendLine("Date,Start,End,Extra time worked,Remark (!! only one line !!)");
+      line.AppendLine("Date,Start,End,Extra time,Remark (!only one line!)");
       File.WriteAllText(path, line.ToString());
     }
 
