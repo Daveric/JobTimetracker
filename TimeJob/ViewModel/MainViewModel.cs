@@ -43,6 +43,7 @@ namespace TimeJobTracker.ViewModel
 
       CmdCloseWindow = new RelayCommand<Window>(CmdCloseWindowExecute);
       CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
+      CommandPath = new RelayCommand(CmdCommandPath);
     }
 
     #endregion Constructor
@@ -55,6 +56,8 @@ namespace TimeJobTracker.ViewModel
     private DateTime _maximumEndTime;
     private TimeSpan _timeToGo;
     private TimeSpan _timeToGoMaximum;
+    public string AppPath => AppDomain.CurrentDomain.BaseDirectory;
+    public string UrlPath => "https://github.com/Daveric/Timer-Job-Tracker";
 
     public DateTime StartTime
     {
@@ -321,6 +324,13 @@ namespace TimeJobTracker.ViewModel
       RaisePropertyChanged("DataCSV");
     }
 
+    public RelayCommand CommandPath { get; set; }
+
+    private void CmdCommandPath()
+    {
+      System.Diagnostics.Process.Start("explorer.exe", $"{AppPath}");
+    }
+    
     public RelayCommand CmdTrackTime { get; private set; }
 
     private void CmdTrackTimeExecute()
@@ -378,6 +388,8 @@ namespace TimeJobTracker.ViewModel
 
     private void CmdAboutExecute()
     {
+      var win = new AboutWindow();
+      win.ShowDialog();
     }
 
     public RelayCommand CmdEditMail { get; private set; }
@@ -532,6 +544,7 @@ namespace TimeJobTracker.ViewModel
             DataContext = this
           };
           win.Show();
+          win.BringIntoView();
         }
       }
     }

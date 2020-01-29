@@ -56,11 +56,11 @@
           </MenuItem>
         </MenuItem>
         <MenuItem Header="_Help">
-          <MenuItem Header="_Language" Command="{Binding CmdLanguage}" CommandParameter="{Binding ElementName=JobTime}" >
+          <!--<MenuItem Header="_Language" Command="{Binding CmdLanguage}" CommandParameter="{Binding ElementName=JobTime}" >
             <MenuItem.Icon>
               <Image Source="Images/language.png" />
             </MenuItem.Icon>
-          </MenuItem>
+          </MenuItem>-->
           <MenuItem Header="_About" Command="{Binding CmdAbout}" CommandParameter="{Binding ElementName=JobTime}" >
             <MenuItem.Icon>
               <Image Source="Images/help_about.png" />
