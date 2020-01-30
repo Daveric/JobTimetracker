@@ -434,15 +434,15 @@ namespace TimeJobTracker.ViewModel
         var signToGo = "";
         if (timeToGo < TimeSpan.Zero)
           signToGo = "-";
-
+        
         TimeToGo = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGo, Math.Abs(timeToGo.Hours), Math.Abs(timeToGo.Minutes), Math.Abs(timeToGo.Seconds));
 
         var timeToGoMaximum = _maximumEndTime - _timeNow;
         var signToGoMaximum = "";
         if (timeToGoMaximum < TimeSpan.Zero)
           signToGoMaximum = "-";
-        else
-          TimeToGoMaximum = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGoMaximum, Math.Abs(timeToGoMaximum.Hours), Math.Abs(timeToGoMaximum.Minutes), Math.Abs(timeToGoMaximum.Seconds));
+
+        TimeToGoMaximum = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGoMaximum, Math.Abs(timeToGoMaximum.Hours), Math.Abs(timeToGoMaximum.Minutes), Math.Abs(timeToGoMaximum.Seconds));
 
         UpdateTimersColor(timeToGo);
         ShowPopUpDialog(timeToGo, timeToGoMaximum);

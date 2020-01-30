@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Windows;
-using TimeJobTracker.ViewModel;
 
 namespace TimeJobTracker
 {
   public partial class MainWindow
   {
-    MainViewModel _vm = new MainViewModel();
-
     public MainWindow()
     {
       InitializeComponent();
-      DataContext = _vm;
+      DataContext = ViewModelToUse.Vm;
     }
 
     protected void CmdMinimizeToTray(object sender, RoutedEventArgs e)
@@ -21,7 +18,7 @@ namespace TimeJobTracker
 
     protected override void OnClosed(EventArgs e)
     {
-      _vm.ExitApplication();
+      ViewModelToUse.Vm.ExitApplication();
     }
   }
 }

@@ -230,7 +230,7 @@
                       IsChecked="{Binding MinimizeOnStartUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
               <CheckBox Grid.Column="1" Grid.Row="1" Content="Send e-mail to your contacts" Margin="10,65,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"  
                       IsChecked="{Binding EmailCheckBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="24"/>
-              <Button Grid.Column="1" Grid.Row="1" Margin="30,90,30,0" Height="25" Width="140" Content="E-mail Settings" Visibility="{Binding DisplayEmailButton}"
+              <Button Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom" Margin="0,20" Height="25" Width="140" Content="E-mail Settings" Visibility="{Binding DisplayEmailButton}"
                   Command="{Binding CmdEditMail}"/>
             </Grid>
           </Grid>

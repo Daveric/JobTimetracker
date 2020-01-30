@@ -1,5 +1,4 @@
 ﻿using System.Windows.Navigation;
-using TimeJobTracker.ViewModel;
 
 namespace TimeJobTracker
 {
@@ -8,8 +7,7 @@ namespace TimeJobTracker
     public AboutWindow()
     {
       InitializeComponent();
-      var vm = new MainViewModel();
-      DataContext = vm;
+      DataContext = ViewModelToUse.Vm;
     }
 
     private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)

@@ -1,5 +1,11 @@
-﻿namespace TimeJobTracker
+﻿using TimeJobTracker.ViewModel;
+
+namespace TimeJobTracker
 {
+  public class ViewModelToUse
+  {
+    public static MainViewModel Vm = new MainViewModel();
+  }
   public static class Constants
   {
     public static string UserDetails = "UserDetails";
