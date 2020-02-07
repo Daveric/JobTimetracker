@@ -4,9 +4,9 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
-using TimeJobTracker.Data;
+using TimeJobRecord.Data;
 
-namespace TimeJobTracker.ViewModel
+namespace TimeJobRecord.ViewModel
 {
   public class EmailViewModel : ViewModelBase
   {

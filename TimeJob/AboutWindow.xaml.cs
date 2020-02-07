@@ -1,6 +1,6 @@
 ﻿using System.Windows.Navigation;
 
-namespace TimeJobTracker
+namespace TimeJobRecord
 {
   public partial class AboutWindow
   {

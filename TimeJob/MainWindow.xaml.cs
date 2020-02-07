@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace TimeJobTracker
+namespace TimeJobRecord
 {
   public partial class MainWindow
   {

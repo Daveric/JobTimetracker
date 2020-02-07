@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TimeJobTracker.Properties {
+namespace TimeJobRecord.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

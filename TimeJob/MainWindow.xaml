@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        x:Class="TimeJobTracker.MainWindow" x:Name="JobTime"
+        x:Class="TimeJobRecord.MainWindow" x:Name="JobTime"
         mc:Ignorable="d"
         Title="ITWORKS® JobTime Record" FontSize="13"
         MinHeight="500" MinWidth="820" Height="500" Width="820" Icon="icon.ico" WindowStartupLocation="CenterScreen"
@@ -37,12 +37,14 @@
               <Image Source="Images/timerconfig.png" />
             </MenuItem.Icon>
           </MenuItem>
+          <MenuItem Header="_Show Time" Command="{Binding CmdExtraTime}" CommandParameter="{Binding ElementName=JobTime}"/>
           <MenuItem Header="_Exit" Command="{Binding CmdCloseWindow}" CommandParameter="{Binding ElementName=JobTime}">
             <MenuItem.Icon>
               <Image Source="Images/close.png" />
             </MenuItem.Icon>
           </MenuItem>
         </MenuItem>
+        
         <MenuItem Header="_Alarm">
           <MenuItem Header="_Reset" Command="{Binding CmdReset}" CommandParameter="{Binding ElementName=JobTime}">
             <MenuItem.Icon>
@@ -137,7 +139,8 @@
           <RotateTransform Angle="90" />
         </Separator.LayoutTransform>
       </Separator>
-      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCSV}" ItemsSource="{Binding DataCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CanUserAddRows="True"></DataGrid>
+      <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCSV}" ItemsSource="{Binding DataCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                CanUserAddRows="True" ClipboardCopyMode="ExcludeHeader" SelectionUnit="Cell"/>
       <Grid Grid.Column="1" Visibility="{Binding DisplayConfiguration}">
         <Grid.RowDefinitions>
           <RowDefinition Height="*" />

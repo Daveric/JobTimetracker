@@ -14,6 +14,7 @@
       <Property name="BodyText"></Property>
     </Properties>
     <Properties name="Configuration">
+      <Property name="ExtraTimeWorked">00:00:00</Property>
       <Property name="WorkingHoursPerWeek">40</Property>
       <Property name="WorkingDaysPerWeek">5</Property>
       <Property name="LunchBreakTime">30</Property>

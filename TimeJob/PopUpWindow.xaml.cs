@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace TimeJobTracker
+namespace TimeJobRecord
 {
   public partial class PopUpWindow
   {

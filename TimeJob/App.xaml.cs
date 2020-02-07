@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 
-namespace TimeJobTracker
+namespace TimeJobRecord
 {
   /// <inheritdoc>
   ///   <cref></cref>
@@ -27,7 +27,7 @@ namespace TimeJobTracker
       e.Cancel = true;
       MainWindow?.Hide(); // A hidden window can be shown again, a closed one not
     }
-
+    
     [STAThread]
     public static void Main()
     {

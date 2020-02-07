@@ -1,6 +1,6 @@
-﻿using TimeJobTracker.ViewModel;
+﻿using TimeJobRecord.ViewModel;
 
-namespace TimeJobTracker
+namespace TimeJobRecord
 {
   public class ViewModelToUse
   {
@@ -20,6 +20,7 @@ namespace TimeJobTracker
     public static string BodyText = "BodyText";
 
     public static string Configuration = "Configuration";
+    public static string ExtraTimeWorked = "ExtraTimeWorked";
     public static string WorkingHoursPerWeek = "WorkingHoursPerWeek";
     public static string WorkingDaysPerWeek = "WorkingDaysPerWeek";
     public static string LunchBreakTime = "LunchBreakTime";

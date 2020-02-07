@@ -3,9 +3,9 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using TimeJobTracker.ViewModel;
+using TimeJobRecord.ViewModel;
 
-namespace TimeJobTracker.Data
+namespace TimeJobRecord.Data
 {
   public class DataAccess
   {
@@ -186,6 +186,11 @@ namespace TimeJobTracker.Data
       writer.WriteAttributeString("name", Constants.Configuration);
 
       writer.WriteStartElement("Property");
+      writer.WriteAttributeString("name", Constants.ExtraTimeWorked);
+      writer.WriteValue(viewModel.ExtraTimeWorked);
+      writer.WriteEndElement();
+
+      writer.WriteStartElement("Property");
       writer.WriteAttributeString("name", Constants.WorkingHoursPerWeek);
       writer.WriteValue(viewModel.WorkingHoursPerWeek);
       writer.WriteEndElement();
@@ -274,6 +279,8 @@ namespace TimeJobTracker.Data
     {
       foreach (var elem in element.Descendants())
       {
+        if (elem.FirstAttribute.Value == Constants.ExtraTimeWorked)
+          viewModel.ExtraTimeWorked = elem.Value;
         if (elem.FirstAttribute.Value == Constants.WorkingHoursPerWeek)
           viewModel.WorkingHoursPerWeek = int.Parse(elem.Value);
         if (elem.FirstAttribute.Value == Constants.WorkingDaysPerWeek)

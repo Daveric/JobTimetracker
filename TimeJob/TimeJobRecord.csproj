@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9883A38B-763F-4D31-A33A-D149BB423908}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TimeJobTracker</RootNamespace>
-    <AssemblyName>TimeJobTracker</AssemblyName>
+    <RootNamespace>TimeJobRecord</RootNamespace>
+    <AssemblyName>TimeJobRecord</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -56,7 +56,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TimeJobTracker.App</StartupObject>
+    <StartupObject>TimeJobRecord.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -115,6 +115,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtraTimeWindow.xaml.cs">
+      <DependentUpon>ExtraTimeWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="Data\DataAccess.cs" />
     <Compile Include="AboutWindow.xaml.cs">
@@ -130,6 +133,10 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ImportCsv.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Page Include="ExtraTimeWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

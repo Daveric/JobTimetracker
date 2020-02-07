@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 
-namespace TimeJobTracker.ViewModel
+namespace TimeJobRecord.ViewModel
 {
   public class ImportCsv
   {

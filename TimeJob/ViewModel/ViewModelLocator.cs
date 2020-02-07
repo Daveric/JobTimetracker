@@ -15,7 +15,7 @@
 using CommonServiceLocator;
 using GalaSoft.MvvmLight.Ioc;
 
-namespace TimeJobTracker.ViewModel
+namespace TimeJobRecord.ViewModel
 {
     /// <summary>
     /// This class contains static references to all the view models in the

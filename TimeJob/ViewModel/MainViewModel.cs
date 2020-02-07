@@ -11,9 +11,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using TimeJobTracker.Data;
+using TimeJobRecord.Data;
 
-namespace TimeJobTracker.ViewModel
+namespace TimeJobRecord.ViewModel
 {
   public class MainViewModel : ViewModelBase
   {
@@ -56,8 +56,22 @@ namespace TimeJobTracker.ViewModel
     private DateTime _maximumEndTime;
     private TimeSpan _timeToGo;
     private TimeSpan _timeToGoMaximum;
+    private TimeSpan _extraTimeWorked;
+
     public string AppPath => AppDomain.CurrentDomain.BaseDirectory;
     public string UrlPath => "https://github.com/Daveric/Timer-Job-Tracker";
+
+    public string ExtraTimeWorked
+    {
+      get => string.Format("{0}{1:00}:{2:00}:{3:00}", _extraTimeWorked < TimeSpan.Zero ? "-" : "",
+        Math.Abs(_extraTimeWorked.Hours), Math.Abs(_extraTimeWorked.Minutes),
+        Math.Abs(_extraTimeWorked.Seconds));
+      set
+      {
+        _extraTimeWorked = TimeSpan.Parse(value);
+        RaisePropertyChanged();
+      }
+    }
 
     public DateTime StartTime
     {
@@ -354,6 +368,15 @@ namespace TimeJobTracker.ViewModel
       DisplayConfig = true;
     }
 
+    public RelayCommand CmdExtraTime { get; private set; }
+
+    private void CmdExtraTimeExecute()
+    {
+      SaveDataOnCSVFile(_timeLogFileLocation);
+      var extrawnd = new ExtraTimeWindow();
+      extrawnd.ShowDialog();
+    }
+
     public RelayCommand CmdReset { get; private set; }
 
     private void CmdResetExecute()
@@ -593,6 +616,7 @@ namespace TimeJobTracker.ViewModel
       CmdOpenLoggingFileLocation = new RelayCommand(CmdOpenLoggingFileLocationExecute);
 
       CmdConfig = new RelayCommand(CmdConfigExecute);
+      CmdExtraTime = new RelayCommand(CmdExtraTimeExecute);
       CmdHideConfig = new RelayCommand(CmdHideConfigExecute);
       CmdAddSounds = new RelayCommand(CmdAddSoundsExecute);
       CmdTrackTime = new RelayCommand(CmdTrackTimeExecute);
@@ -690,12 +714,17 @@ namespace TimeJobTracker.ViewModel
         var csv = new StringBuilder();
         var Date = DateTime.Today.ToString(@"d");
         var End = _timeNow.ToString(@"HH:mm:ss tt");
-        var extraTimeWorked = _timeToGo < TimeSpan.Zero ? _timeNow - _regularEndTime : TimeSpan.Zero;
+        var sign = "";
+        var extraTime = _timeNow - _regularEndTime;
+        if (extraTime < TimeSpan.Zero)
+          sign = "-";
+
+        var ExtraTime = string.Format("{0}{1:00}:{2:00}:{3:00}", sign, Math.Abs(extraTime.Hours), Math.Abs(extraTime.Minutes), Math.Abs(extraTime.Seconds));
         var Remark = string.Empty;
+        _extraTimeWorked = TimeSpan.Zero;
 
         IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
         csv.AppendLine(string.Join(",", columnNames));
-
         DateTime dateValue;
         foreach (DataRow row in DataCSV.Rows)
         {
@@ -703,16 +732,20 @@ namespace TimeJobTracker.ViewModel
           var fieldLine = string.Join(",", fields);
           if ((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
           {
-            csv.AppendLine(fieldLine);
+            csv.AppendLine(fieldLine); 
           }
           else if (DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
           {
             Remark = fields.Last();
           }
+
+          _extraTimeWorked = _extraTimeWorked + TimeSpan.Parse(fields.ToArray()[3]);
         }
 
+        RaisePropertyChanged("ExtraTimeWorked");
+
         var Start = _startTime.ToString(@"HH:mm:ss tt");
-        var newLine = string.Format("{0},{1},{2},{3},{4}", Date, Start, End, extraTimeWorked, Remark);
+        var newLine = string.Format("{0},{1},{2},{3},{4}", Date, Start, End, ExtraTime, Remark);
         csv.AppendLine(newLine);
 
         File.WriteAllText(fileName, csv.ToString());
