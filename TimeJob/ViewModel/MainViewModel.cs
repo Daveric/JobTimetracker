@@ -21,6 +21,8 @@ namespace TimeJobRecord.ViewModel
 
     private static readonly string soundPath = @"SoundFiles\";
 
+    const string endSession = "End Session";
+
     private System.Windows.Forms.NotifyIcon _notifyIcon;
 
     private static string TimeLoggingFile => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\TimeLogging.csv");
@@ -373,6 +375,8 @@ namespace TimeJobRecord.ViewModel
     private void CmdExtraTimeExecute()
     {
       SaveDataOnCSVFile(_timeLogFileLocation);
+      LoadCSVOnDataGridView(_timeLogFileLocation);
+      RaisePropertyChanged("DataCSV");
       var extrawnd = new ExtraTimeWindow();
       extrawnd.ShowDialog();
     }
@@ -583,7 +587,7 @@ namespace TimeJobRecord.ViewModel
     public void ExitApplication()
     {
       DataAccess.SaveConfiguration(this);
-      SaveDataOnCSVFile(_timeLogFileLocation);
+      SaveDataOnCSVFile(_timeLogFileLocation, endSession);
       _isExit = true;
       Application.Current.Shutdown();
       _notifyIcon.Dispose();
@@ -699,7 +703,7 @@ namespace TimeJobRecord.ViewModel
       {
         IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
         var fieldLine = string.Join(",", fields);
-        if (fieldLine.Contains(todayDate) && DateTime.TryParse(fields.ElementAt(1), out DateTime dateValue))
+        if (fieldLine.Contains(todayDate) && DateTime.TryParse(fields.ElementAt(1), out DateTime dateValue) && !fields.Last().Contains(endSession))
         {
           value = dateValue;
           break;
@@ -707,20 +711,23 @@ namespace TimeJobRecord.ViewModel
       }
     }
 
-    private void SaveDataOnCSVFile(string fileName)
+    private void SaveDataOnCSVFile(string fileName, string remark = "")
     {
       try
       {
         var csv = new StringBuilder();
         var Date = DateTime.Today.ToString(@"d");
+        var Start = _startTime.ToString(@"HH:mm:ss tt");
         var End = _timeNow.ToString(@"HH:mm:ss tt");
+
         var sign = "";
         var extraTime = _timeNow - _regularEndTime;
         if (extraTime < TimeSpan.Zero)
           sign = "-";
-
         var ExtraTime = string.Format("{0}{1:00}:{2:00}:{3:00}", sign, Math.Abs(extraTime.Hours), Math.Abs(extraTime.Minutes), Math.Abs(extraTime.Seconds));
-        var Remark = string.Empty;
+
+        var Remark = remark;
+
         _extraTimeWorked = TimeSpan.Zero;
 
         IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -730,11 +737,12 @@ namespace TimeJobRecord.ViewModel
         {
           IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
           var fieldLine = string.Join(",", fields);
-          if ((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
+          if (((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.ElementAt(1), out dateValue)) ||
+              (fieldLine.Contains(Date) && DateTime.TryParse(fields.ElementAt(1), out dateValue) && (dateValue.Hour > 1) && ((_startTime - dateValue) > (_timeLunchBreak + _timeAlert))))
           {
             csv.AppendLine(fieldLine); 
           }
-          else if (DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue))
+          else if (DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue) && string.IsNullOrEmpty(Remark))
           {
             Remark = fields.Last();
           }
@@ -744,7 +752,6 @@ namespace TimeJobRecord.ViewModel
 
         RaisePropertyChanged("ExtraTimeWorked");
 
-        var Start = _startTime.ToString(@"HH:mm:ss tt");
         var newLine = string.Format("{0},{1},{2},{3},{4}", Date, Start, End, ExtraTime, Remark);
         csv.AppendLine(newLine);
 

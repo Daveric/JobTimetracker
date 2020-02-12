@@ -140,8 +140,9 @@
         </Separator.LayoutTransform>
       </Separator>
       <DataGrid Grid.Column="1" Visibility="{Binding DisplayDataCSV}" ItemsSource="{Binding DataCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                CanUserAddRows="True" ClipboardCopyMode="ExcludeHeader" SelectionUnit="Cell"/>
-      <Grid Grid.Column="1" Visibility="{Binding DisplayConfiguration}">
+                CanUserAddRows="True" SelectionUnit="Cell">
+      </DataGrid>
+      <Grid Grid.Column="1" Visibility="{Binding DisplayConfiguration}" >
         <Grid.RowDefinitions>
           <RowDefinition Height="*" />
           <RowDefinition Height="Auto" />
