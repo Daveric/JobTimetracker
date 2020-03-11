@@ -587,7 +587,7 @@ namespace TimeJobRecord.ViewModel
     public void ExitApplication()
     {
       DataAccess.SaveConfiguration(this);
-      SaveDataOnCSVFile(_timeLogFileLocation, endSession);
+      SaveDataOnCSVFile(_timeLogFileLocation);
       _isExit = true;
       Application.Current.Shutdown();
       _notifyIcon.Dispose();
