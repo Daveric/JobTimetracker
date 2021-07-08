@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CommonProperties version="1">
+  <Properties>
+    <Properties name="Configuration">
+      <Property name="ExtraTimeWorked">-06:41:33</Property>
+      <Property name="WorkingHoursPerWeek">40</Property>
+      <Property name="WorkingDaysPerWeek">5</Property>
+      <Property name="LunchBreakTime">30</Property>
+      <Property name="AlertTime">60</Property>
+      <Property name="TimeLogFileLocationName">C:\Users\Erick Maldonado\source\repos\Daveric\JobTimetracker\TimeJob\bin\Release\TimeJobTracking\TimeLogging.csv</Property>
+      <Property name="TimeLogging">1</Property>
+      <Property name="SoundWarning">1</Property>
+      <Property name="MinimizeOnStartUp">1</Property>
+      <Property name="EmailCheckBox">0</Property>
+    </Properties>
+  </Properties>
+</CommonProperties>
