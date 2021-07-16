@@ -28,6 +28,7 @@ namespace TimeJobRecord.ViewModel
 
     private static string TimeLoggingFile => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\TimeLogging.csv");
 
+    // flag for exit the application
     private bool _isExit = false;
 
     #endregion Fields
