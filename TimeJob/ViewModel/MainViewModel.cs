@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -521,11 +522,16 @@ namespace TimeJobRecord.ViewModel
       timer.Start();
     }
     
-    private DateTime? GetFirstLoggingToMachine()
+    private DateTime? GetFirstLoginToMachine()
     {
-      ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime csvLogon);
-      var logInTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
-      return csvLogon < logInTime ? csvLogon: logInTime;
+      CheckDataCsv(DateTime.Today.ToString(@"d"), out var csvLogon);
+      var logInTime = UserPrincipal.Current.LastLogon;
+      if (csvLogon.Day.Equals(logInTime?.Day))
+      {
+        return csvLogon < logInTime ? csvLogon : logInTime;
+      }
+
+      return logInTime;
     }
 
     private void UpdateTimers()
@@ -609,7 +615,7 @@ namespace TimeJobRecord.ViewModel
     private void InitGeneralSettings()
     {
       LoadCSVOnDataGridView(_timeLogFileLocation);
-      StartTime = GetFirstLoggingToMachine().Value;
+      StartTime = GetFirstLoginToMachine().GetValueOrDefault();
       StartTimer();
       RemainingTimerToGo();
       ChargeSoundFiles();
@@ -696,18 +702,19 @@ namespace TimeJobRecord.ViewModel
       }
     }
 
-    private void ChekDataCSV(string todayDate, out DateTime value)
+    private void CheckDataCsv(string todayDate, out DateTime value)
     {
       value = DateTime.Now;
-      foreach (DataRow row in DataCSV.Rows)
+      for (var i = DataCSV.Rows.Count - 1; i == 0; i--)
       {
-        IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
-        var fieldLine = string.Join(",", fields);
-        if (fieldLine.Contains(todayDate) && DateTime.TryParse(fields.ElementAt(1), out DateTime dateValue) && !fields.Last().Contains(endSession))
-        {
-          value = dateValue;
-          break;
-        }
+        var row = DataCSV.Rows[i];
+        var fields = row.ItemArray.Select(field => field.ToString());
+        var enumerable = fields as string[] ?? fields.ToArray();
+        var fieldLine = string.Join(",", enumerable);
+        if (!fieldLine.Contains(todayDate) || !DateTime.TryParse(enumerable.ElementAt(1), out var dateValue) ||
+            enumerable.Last().Contains(endSession)) continue;
+        value = dateValue;
+        break;
       }
     }
 
@@ -730,12 +737,12 @@ namespace TimeJobRecord.ViewModel
 
         _extraTimeWorked = TimeSpan.Zero;
 
-        IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+        var columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
         csv.AppendLine(string.Join(",", columnNames));
         DateTime dateValue;
         foreach (DataRow row in DataCSV.Rows)
         {
-          IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+          var fields = row.ItemArray.Select(field => field.ToString());
           var fieldLine = string.Join(",", fields);
           if (((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.ElementAt(1), out dateValue)) ||
               (fieldLine.Contains(Date) && DateTime.TryParse(fields.ElementAt(1), out dateValue) && (dateValue.Hour > 1) && ((_startTime - dateValue) > (_timeLunchBreak + _timeAlert))))

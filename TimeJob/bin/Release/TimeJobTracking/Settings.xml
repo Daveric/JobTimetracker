@@ -2,7 +2,7 @@
 <CommonProperties version="1">
   <Properties>
     <Properties name="Configuration">
-      <Property name="ExtraTimeWorked">-06:41:33</Property>
+      <Property name="ExtraTimeWorked">-09:07:36</Property>
       <Property name="WorkingHoursPerWeek">40</Property>
       <Property name="WorkingDaysPerWeek">5</Property>
       <Property name="LunchBreakTime">30</Property>
