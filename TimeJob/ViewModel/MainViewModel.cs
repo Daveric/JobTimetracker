@@ -4,7 +4,6 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -520,13 +519,14 @@ namespace TimeJobRecord.ViewModel
     private DateTime? GetFirstLoginToMachine()
     {
       CheckDataCsv(DateTime.Today.ToString(@"d"), out var csvLogon);
-      var logInTime = UserPrincipal.Current.LastLogon;
-      if (csvLogon.Day.Equals(logInTime?.Day))
+      var loginTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
+      if (!loginTime.Day.Equals(DateTime.Today.Day)) return csvLogon;
+      if (csvLogon.Day.Equals(loginTime.Day))
       {
-        return csvLogon < logInTime ? csvLogon : logInTime;
+        return csvLogon < loginTime ? csvLogon : loginTime;
       }
+      return loginTime;
 
-      return logInTime;
     }
 
     private void UpdateTimers()
