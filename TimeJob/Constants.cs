@@ -30,6 +30,7 @@ namespace TimeJobRecord
     public static string SoundWarning = "SoundWarning";
     public static string MinimizeOnStartUp = "MinimizeOnStartUp";
     public static string EmailCheckBox = "EmailCheckBox";
+    
   }
 }
   
