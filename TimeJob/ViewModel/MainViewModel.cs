@@ -19,9 +19,9 @@ namespace TimeJobRecord.ViewModel
   {
     #region Fields
 
-    private static readonly string soundPath = @"SoundFiles\";
+    private const string SoundPath = @"SoundFiles\";
 
-    const string endSession = "End Session";
+    private const string EndSession = "End Session";
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;
 
@@ -66,9 +66,9 @@ namespace TimeJobRecord.ViewModel
 
     public string ExtraTimeWorked
     {
-      get => string.Format("{0}{1:00}:{2:00}:{3:00}", _extraTimeWorked < TimeSpan.Zero ? "-" : "",
-        Math.Abs(_extraTimeWorked.Hours), Math.Abs(_extraTimeWorked.Minutes),
-        Math.Abs(_extraTimeWorked.Seconds));
+      get =>
+        $"{(_extraTimeWorked < TimeSpan.Zero ? "-" : "")}{Math.Abs(_extraTimeWorked.Hours):00}:{Math.Abs(_extraTimeWorked.Minutes):00}:{Math.Abs(_extraTimeWorked.Seconds):00}"
+      ;
       set
       {
         _extraTimeWorked = TimeSpan.Parse(value);
@@ -166,7 +166,7 @@ namespace TimeJobRecord.ViewModel
 
     public SolidColorBrush ColorTime { get; set; }
 
-    public string _timeLogFileLocation;
+    public string TimeLogFileLocation;
     private string _timeLogFileLocationName;
 
     public string TimeLogFileLocationName
@@ -176,7 +176,7 @@ namespace TimeJobRecord.ViewModel
       {
         _timeLogFileLocationName = value;
         if (value != string.Empty)
-          _timeLogFileLocation = Path.GetFullPath(value);
+          TimeLogFileLocation = Path.GetFullPath(value);
         RaisePropertyChanged();
       }
     }
@@ -277,15 +277,9 @@ namespace TimeJobRecord.ViewModel
       }
     }
 
-    public Visibility DisplayConfiguration
-    {
-      get => DisplayConfig ? Visibility.Visible : Visibility.Hidden;
-    }
+    public Visibility DisplayConfiguration => DisplayConfig ? Visibility.Visible : Visibility.Hidden;
 
-    public Visibility DisplayDataCSV
-    {
-      get => DisplayConfig ? Visibility.Hidden : Visibility.Visible;
-    }
+    public Visibility DisplayDataCsv => DisplayConfig ? Visibility.Hidden : Visibility.Visible;
 
     #endregion Properties
 
@@ -303,8 +297,8 @@ namespace TimeJobRecord.ViewModel
     private void CmdHideConfigExecute()
     {
       DisplayConfig = false;
-      SaveDataOnCSVFile(_timeLogFileLocation);
-      LoadCSVOnDataGridView(_timeLogFileLocation);
+      SaveDataOnCSVFile(TimeLogFileLocation);
+      LoadCSVOnDataGridView(TimeLogFileLocation);
       RaisePropertyChanged("DataCSV");
     }
 
@@ -320,7 +314,7 @@ namespace TimeJobRecord.ViewModel
       {
         try
         {
-          File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, soundPath + Path.GetFileName(openFile.FileName)));
+          File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SoundPath + Path.GetFileName(openFile.FileName)));
           ChargeSoundFiles();
         }
         catch (Exception e)
@@ -336,8 +330,8 @@ namespace TimeJobRecord.ViewModel
     {
       DataAccess.SaveConfiguration(this);
       DisplayConfig = false;
-      SaveDataOnCSVFile(_timeLogFileLocation);
-      LoadCSVOnDataGridView(_timeLogFileLocation);
+      SaveDataOnCSVFile(TimeLogFileLocation);
+      LoadCSVOnDataGridView(TimeLogFileLocation);
       RaisePropertyChanged("DataCSV");
     }
 
@@ -354,7 +348,7 @@ namespace TimeJobRecord.ViewModel
     {
       if (TimeLogging)
       {
-        LoadCSVOnDataGridView(_timeLogFileLocation);
+        LoadCSVOnDataGridView(TimeLogFileLocation);
         RaisePropertyChanged("DataCSV");
       }
       else
@@ -375,8 +369,8 @@ namespace TimeJobRecord.ViewModel
 
     private void CmdExtraTimeExecute()
     {
-      SaveDataOnCSVFile(_timeLogFileLocation);
-      LoadCSVOnDataGridView(_timeLogFileLocation);
+      SaveDataOnCSVFile(TimeLogFileLocation);
+      LoadCSVOnDataGridView(TimeLogFileLocation);
       RaisePropertyChanged("DataCSV");
       var extrawnd = new ExtraTimeWindow();
       extrawnd.ShowDialog();
@@ -390,7 +384,7 @@ namespace TimeJobRecord.ViewModel
       WorkingHoursPerWeek = 40;
       MinutesBreak = 30;
       MinutesAlert = 60;
-      _timeLogFileLocation = TimeLoggingFile;
+      TimeLogFileLocation = TimeLoggingFile;
       ChargeSoundFiles();
 
       RaisePropertyChanged("TimeLogFileLocationName");
@@ -463,14 +457,14 @@ namespace TimeJobRecord.ViewModel
         if (timeToGo < TimeSpan.Zero)
           signToGo = "-";
         
-        TimeToGo = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGo, Math.Abs(timeToGo.Hours), Math.Abs(timeToGo.Minutes), Math.Abs(timeToGo.Seconds));
+        TimeToGo = $"{signToGo}{Math.Abs(timeToGo.Hours):00}:{Math.Abs(timeToGo.Minutes):00}:{Math.Abs(timeToGo.Seconds):00}";
 
         var timeToGoMaximum = _maximumEndTime - _timeNow;
         var signToGoMaximum = "";
         if (timeToGoMaximum < TimeSpan.Zero)
           signToGoMaximum = "-";
 
-        TimeToGoMaximum = string.Format("{0}{1:00}:{2:00}:{3:00}", signToGoMaximum, Math.Abs(timeToGoMaximum.Hours), Math.Abs(timeToGoMaximum.Minutes), Math.Abs(timeToGoMaximum.Seconds));
+        TimeToGoMaximum = $"{signToGoMaximum}{Math.Abs(timeToGoMaximum.Hours):00}:{Math.Abs(timeToGoMaximum.Minutes):00}:{Math.Abs(timeToGoMaximum.Seconds):00}";
 
         UpdateTimersColor(timeToGo);
         ShowPopUpDialog(timeToGo, timeToGoMaximum);
@@ -522,11 +516,17 @@ namespace TimeJobRecord.ViewModel
       timer.Start();
     }
     
-    private DateTime? GetFirstLoggingToMachine()
+    private DateTime? GetFirstLoginToMachine()
     {
-      ChekDataCSV(DateTime.Today.ToString(@"d"), out DateTime csvLogon);
-      var logInTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
-      return csvLogon < logInTime ? csvLogon: logInTime;
+      CheckDataCsv(DateTime.Today.ToString(@"d"), out var csvLogon);
+      var loginTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
+      if (!loginTime.Day.Equals(DateTime.Today.Day)) return csvLogon;
+      if (csvLogon.Day.Equals(loginTime.Day))
+      {
+        return csvLogon < loginTime ? csvLogon : loginTime;
+      }
+      return loginTime;
+
     }
 
     private void UpdateTimers()
@@ -588,7 +588,7 @@ namespace TimeJobRecord.ViewModel
     public void ExitApplication()
     {
       DataAccess.SaveConfiguration(this);
-      SaveDataOnCSVFile(_timeLogFileLocation);
+      SaveDataOnCSVFile(TimeLogFileLocation);
       _isExit = true;
       Application.Current.Shutdown();
       _notifyIcon.Dispose();
@@ -609,8 +609,8 @@ namespace TimeJobRecord.ViewModel
 
     private void InitGeneralSettings()
     {
-      LoadCSVOnDataGridView(_timeLogFileLocation);
-      StartTime = GetFirstLoggingToMachine().Value;
+      LoadCSVOnDataGridView(TimeLogFileLocation);
+      StartTime = GetFirstLoginToMachine().GetValueOrDefault();
       StartTimer();
       RemainingTimerToGo();
       ChargeSoundFiles();
@@ -637,7 +637,7 @@ namespace TimeJobRecord.ViewModel
     {
       SoundsDict = new Dictionary<string, string>();
       SoundsList = new List<string>();
-      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, soundPath);
+      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SoundPath);
       if (!Directory.Exists(path))
       {
         Directory.CreateDirectory(path);
@@ -697,18 +697,19 @@ namespace TimeJobRecord.ViewModel
       }
     }
 
-    private void ChekDataCSV(string todayDate, out DateTime value)
+    private void CheckDataCsv(string todayDate, out DateTime value)
     {
       value = DateTime.Now;
-      foreach (DataRow row in DataCSV.Rows)
+      for (var i = DataCSV.Rows.Count - 1; i == 0; i--)
       {
-        IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
-        var fieldLine = string.Join(",", fields);
-        if (fieldLine.Contains(todayDate) && DateTime.TryParse(fields.ElementAt(1), out DateTime dateValue) && !fields.Last().Contains(endSession))
-        {
-          value = dateValue;
-          break;
-        }
+        var row = DataCSV.Rows[i];
+        var fields = row.ItemArray.Select(field => field.ToString());
+        var enumerable = fields as string[] ?? fields.ToArray();
+        var fieldLine = string.Join(",", enumerable);
+        if (!fieldLine.Contains(todayDate) || !DateTime.TryParse(enumerable.ElementAt(1), out var dateValue) ||
+            enumerable.Last().Contains(EndSession)) continue;
+        value = dateValue;
+        break;
       }
     }
 
@@ -717,43 +718,39 @@ namespace TimeJobRecord.ViewModel
       try
       {
         var csv = new StringBuilder();
-        var Date = DateTime.Today.ToString(@"d");
-        var Start = _startTime.ToString(@"HH:mm:ss tt");
-        var End = _timeNow.ToString(@"HH:mm:ss tt");
+        var todayDate = DateTime.Today.ToString(@"d");
+        var startTime = _startTime.ToString(@"HH:mm:ss tt");
+        var endTime = _timeNow.ToString(@"HH:mm:ss tt");
 
-        var sign = "";
         var extraTime = _timeNow - _regularEndTime;
-        if (extraTime < TimeSpan.Zero)
-          sign = "-";
-        var ExtraTime = string.Format("{0}{1:00}:{2:00}:{3:00}", sign, Math.Abs(extraTime.Hours), Math.Abs(extraTime.Minutes), Math.Abs(extraTime.Seconds));
-
-        var Remark = remark;
-
+        var sign = extraTime < TimeSpan.Zero ? "-" : "";
+        var timeExtra = $"{sign}{Math.Abs(extraTime.Hours):00}:{Math.Abs(extraTime.Minutes):00}:{Math.Abs(extraTime.Seconds):00}";
+        
         _extraTimeWorked = TimeSpan.Zero;
 
-        IEnumerable<string> columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+        var columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
         csv.AppendLine(string.Join(",", columnNames));
-        DateTime dateValue;
         foreach (DataRow row in DataCSV.Rows)
         {
-          IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
-          var fieldLine = string.Join(",", fields);
-          if (((!fieldLine.Contains(Date)) && DateTime.TryParse(fields.ElementAt(1), out dateValue)) ||
-              (fieldLine.Contains(Date) && DateTime.TryParse(fields.ElementAt(1), out dateValue) && (dateValue.Hour > 1) && ((_startTime - dateValue) > (_timeLunchBreak + _timeAlert))))
+          var fields = row.ItemArray.Select(field => field.ToString());
+          var enumerable = fields as string[] ?? fields.ToArray();
+          var fieldLine = string.Join(",", enumerable);
+          if (((!fieldLine.Contains(todayDate)) && DateTime.TryParse(enumerable.ElementAt(1), out var dateValue)) ||
+              (fieldLine.Contains(todayDate) && DateTime.TryParse(enumerable.ElementAt(1), out dateValue) && (dateValue.Hour > 1) && ((_startTime - dateValue) > (_timeLunchBreak + _timeAlert))))
           {
-            csv.AppendLine(fieldLine); 
+            csv.AppendLine(fieldLine);
           }
-          else if (DateTime.TryParse(fields.First(), out dateValue) && DateTime.TryParse(fields.ElementAt(1), out dateValue) && string.IsNullOrEmpty(Remark))
+          else if (DateTime.TryParse(enumerable.First(), out dateValue) && DateTime.TryParse(enumerable.ElementAt(1), out dateValue) && string.IsNullOrEmpty(remark))
           {
-            Remark = fields.Last();
+            remark = enumerable.Last();
           }
 
-          _extraTimeWorked = _extraTimeWorked + TimeSpan.Parse(fields.ToArray()[3]);
+          _extraTimeWorked = _extraTimeWorked + TimeSpan.Parse(enumerable[3]);
         }
 
         RaisePropertyChanged("ExtraTimeWorked");
 
-        var newLine = string.Format("{0},{1},{2},{3},{4}", Date, Start, End, ExtraTime, Remark);
+        var newLine = $"{todayDate},{startTime},{endTime},{timeExtra},{remark}";
         csv.AppendLine(newLine);
 
         File.WriteAllText(fileName, csv.ToString());
