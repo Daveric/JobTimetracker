@@ -93,6 +93,16 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap config {
+            get {
+                object obj = ResourceManager.GetObject("config", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap deactivate {
             get {
                 object obj = ResourceManager.GetObject("deactivate", resourceCulture);
@@ -103,9 +113,9 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap help_about {
+        public static System.Drawing.Bitmap help {
             get {
-                object obj = ResourceManager.GetObject("help_about", resourceCulture);
+                object obj = ResourceManager.GetObject("help", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -171,9 +181,9 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap timerconfig {
+        public static System.Drawing.Bitmap seetime {
             get {
-                object obj = ResourceManager.GetObject("timerconfig", resourceCulture);
+                object obj = ResourceManager.GetObject("seetime", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

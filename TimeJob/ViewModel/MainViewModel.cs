@@ -21,10 +21,10 @@ namespace TimeJobRecord.ViewModel
   {
     #region Fields
     private readonly System.Windows.Forms.NotifyIcon _notifyIcon;
-    private DataAccess _dataAccess;
+    private readonly DataAccess _dataAccess;
     
     // flag for exit the application
-    private bool _isExit = false;
+    private bool _isExit;
 
     #endregion Fields
 
@@ -32,7 +32,7 @@ namespace TimeJobRecord.ViewModel
 
     public MainViewModel()
     {
-      _dataAccess = new DataAccess();
+      _dataAccess = new DataAccess(this);
       _notifyIcon = new System.Windows.Forms.NotifyIcon{Visible = true};
       _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
       InitGeneralSettings();
@@ -71,11 +71,7 @@ namespace TimeJobRecord.ViewModel
     public DateTime StartTime
     {
       get => _startTime;
-      set
-      {
-        _startTime = value;
-        UpdateTimers();
-      }
+      set { _startTime = value; UpdateTimers(); }
     }
 
     public string TimeNow
@@ -101,7 +97,11 @@ namespace TimeJobRecord.ViewModel
     public int WorkingHoursPerWeek
     {
       get => _workingHoursPerWeek;
-      set { _workingHoursPerWeek = value; RaisePropertyChanged(); }
+      set 
+      { 
+        _workingHoursPerWeek = value; 
+        RaisePropertyChanged();
+      }
     }
 
     private int _workingDaysPerWeek;
@@ -111,13 +111,7 @@ namespace TimeJobRecord.ViewModel
       get => _workingDaysPerWeek;
       set
       {
-        if (value == 0)
-        {
-          CmdResetExecute();
-        }
-        else
-          _workingDaysPerWeek = value;
-
+        _workingDaysPerWeek = value;
         RaisePropertyChanged();
       }
     }
@@ -233,7 +227,7 @@ namespace TimeJobRecord.ViewModel
     public bool SoundWarning
     {
       get => _soundWarning;
-      set { _soundWarning = value; RaisePropertyChanged("IsEnabled"); }
+      set { _soundWarning = value; RaisePropertyChanged(); }
     }
 
     public string Warning => Properties.Resources.Warning;
@@ -245,45 +239,18 @@ namespace TimeJobRecord.ViewModel
       get => _minimizeOnStartUp;
       set { _minimizeOnStartUp = value; RaisePropertyChanged(); }
     }
-
-    private bool _displayConfig;
-
-    private bool DisplayConfig
-    {
-      get => _displayConfig;
-      set
-      {
-        _displayConfig = value;
-        RaisePropertyChanged("DisplayConfiguration");
-        RaisePropertyChanged("DisplayDataCsv");
-      }
-    }
-
-    public Visibility DisplayConfiguration => DisplayConfig ? Visibility.Visible : Visibility.Hidden;
-
-    public Visibility DisplayDataCsv => DisplayConfig ? Visibility.Hidden : Visibility.Visible;
-
+    
     #endregion Properties
 
     #region Commands
 
-    public RelayCommand<Window> CmdCloseWindow { get; private set; }
+    public RelayCommand<Window> CmdCloseWindow { get; }
 
     private void CmdCloseWindowExecute(Window window)
     {
       ExitApplication();
     }
-
-    public RelayCommand CmdHideConfig { get; private set; }
-
-    private void CmdHideConfigExecute()
-    {
-      DisplayConfig = false;
-      SaveDataOnCSVFile(TimeLogFileLocation);
-      LoadCSVOnDataGridView(TimeLogFileLocation);
-      RaisePropertyChanged("DataCsv");
-    }
-
+    
     public RelayCommand CmdAddSounds { get; private set; }
 
     private void CmdAddSoundsExecute()
@@ -292,17 +259,15 @@ namespace TimeJobRecord.ViewModel
       {
         Filter = "All files (*.*)|*.*|MP3 files (*.mp3)|*.mp3|WAV files (*.wav)|*.wav"
       };
-      if (openFile.ShowDialog() == true)
+      if (openFile.ShowDialog() != true) return;
+      try
       {
-        try
-        {
-          File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.SoundPath + Path.GetFileName(openFile.FileName)));
-          ChargeSoundFiles();
-        }
-        catch (Exception e)
-        {
-          MessageBox.Show(e.Message, Properties.Resources.Warning);
-        }
+        File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.SoundPath + Path.GetFileName(openFile.FileName)));
+        ChargeSoundFiles();
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message, Properties.Resources.Warning);
       }
     }
 
@@ -310,8 +275,7 @@ namespace TimeJobRecord.ViewModel
 
     private void CmdSaveSettingsExecute()
     {
-      DataAccess.SaveConfigurationSettings(this);
-      DisplayConfig = false;
+      _dataAccess.SaveConfigurationSettings(this);
       SaveDataOnCSVFile(TimeLogFileLocation);
       LoadCSVOnDataGridView(TimeLogFileLocation);
       RaisePropertyChanged("DataCsv");
@@ -329,17 +293,9 @@ namespace TimeJobRecord.ViewModel
       else
       {
         MessageBox.Show("TimeLogging is deactivated", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-        DisplayConfig = true;
       }
     }
-
-    public RelayCommand CmdConfig { get; private set; }
-
-    private void CmdConfigExecute()
-    {
-      DisplayConfig = true;
-    }
-
+    
     public RelayCommand CmdExtraTime { get; private set; }
 
     private void CmdExtraTimeExecute()
@@ -361,6 +317,7 @@ namespace TimeJobRecord.ViewModel
       MinutesAlert = 60;
       TimeLogFileLocation = TimeLoggingFile;
       ChargeSoundFiles();
+      SoundWarning = true;
 
       RaisePropertyChanged("TimeLogFileLocationName");
       RaisePropertyChanged("MinutesAlertText");
@@ -393,7 +350,7 @@ namespace TimeJobRecord.ViewModel
 
     private void CmdEditMailExecute()
     {
-      var win = new EmailWindow();
+      var win = new EmailWindow(_dataAccess);
       win.Show();
     }
 
@@ -505,7 +462,7 @@ namespace TimeJobRecord.ViewModel
 
     private void UpdateTimers()
     {
-      if ((_workingDaysPerWeek == 0) || (_workingHoursPerWeek == 0))
+      if (_workingDaysPerWeek == 0 || _workingHoursPerWeek == 0)
         CmdResetExecute();
       _regularEndTime = _startTime + _timeLunchBreak + TimeSpan.FromHours(_workingHoursPerWeek / _workingDaysPerWeek);
       _maximumEndTime = _regularEndTime + _timeAlert;
@@ -561,7 +518,7 @@ namespace TimeJobRecord.ViewModel
 
     public void ExitApplication()
     {
-      DataAccess.SaveConfigurationSettings(this);
+      _dataAccess.SaveConfigurationSettings(this);
       SaveDataOnCSVFile(TimeLogFileLocation);
       _isExit = true;
       Application.Current.Shutdown();
@@ -593,14 +550,10 @@ namespace TimeJobRecord.ViewModel
       CmdTrackTimeExecute();
 
       CmdOpenLoggingFileLocation = new RelayCommand(CmdOpenLoggingFileLocationExecute);
-
-      CmdConfig = new RelayCommand(CmdConfigExecute);
       CmdExtraTime = new RelayCommand(CmdExtraTimeExecute);
-      CmdHideConfig = new RelayCommand(CmdHideConfigExecute);
       CmdAddSounds = new RelayCommand(CmdAddSoundsExecute);
       CmdTrackTime = new RelayCommand(CmdTrackTimeExecute);
       CmdEditMail = new RelayCommand(CmdEditMailExecute);
-
       CmdReset = new RelayCommand(CmdResetExecute);
       CmdDeactivate = new RelayCommand(CmdDeactivateExecute);
       CmdLanguage = new RelayCommand(CmdLanguageExecute);
@@ -638,18 +591,12 @@ namespace TimeJobRecord.ViewModel
         SoundsList.Add(Path.GetFileName(sound));
       }
 
-      if (SoundsDict.Count >= 1)
-      {
-        SoundWarning = true;
-        RaisePropertyChanged("SoundWarning");
-        RaisePropertyChanged("SoundsList");
-      }
-
+      RaisePropertyChanged("SoundsList");
       SelectedAlertSound = SoundsDict.Keys.ElementAt(0);
       SelectedWarningSound = SoundsDict.Keys.ElementAt(1);
     }
 
-    private void ActivateAlarm(string soundPath)
+    private static void ActivateAlarm(string soundPath)
     {
       var soundPlayer = new SoundPlayer { SoundLocation = soundPath };
       soundPlayer.Play();

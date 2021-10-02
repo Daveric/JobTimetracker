@@ -211,16 +211,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\OpenFileLocation.png" />
-    <Resource Include="Icons\timerconfig.png" />
     <Resource Include="Icons\clock.ico" />
     <Resource Include="Icons\alertclock.ico" />
     <Resource Include="Icons\warningclock.ico" />
     <Resource Include="Icons\deactivate.png" />
     <Resource Include="Icons\reset.png" />
-    <Resource Include="Icons\help_about.png" />
     <Resource Include="Icons\language.png" />
-    <Resource Include="icon.ico" />
     <Resource Include="Icons\icon.png" />
+    <Resource Include="Icons\config.png" />
+    <Resource Include="Icons\help.png" />
+    <Resource Include="icon.ico" />
+    <Resource Include="Icons\seetime.png" />
+    <Resource Include="Icons\file.png" />
     <Content Include="SoundFiles\Aoogah.wav" />
     <Content Include="SoundFiles\Disconnect.wav" />
     <Content Include="SoundFiles\Explosion.wav" />

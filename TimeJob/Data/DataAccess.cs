@@ -4,54 +4,54 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Security;
 using TimeJobRecord.Common;
 using TimeJobRecord.Models;
 using TimeJobRecord.ViewModel;
 
 namespace TimeJobRecord.Data
 {
-  internal class DataAccess
+  public class DataAccess
   {
-    private static readonly string SettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\Settings.json");
+    private readonly string _settingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\Settings.json");
 
     private static CommonProperties _commonProperties;
 
-    public DataAccess()
+    public DataAccess(MainViewModel viewModel)
     {
-      LoadFile();
+      LoadFile(viewModel);
     }
 
-    private static void LoadFile()
+    private void LoadFile(MainViewModel viewModel)
     {
-      var fileInfo = new FileInfo(SettingsFile);
-      if (!File.Exists(SettingsFile) && !Directory.Exists(fileInfo.DirectoryName) && !File.Exists(fileInfo.ToString()))
+      if (!File.Exists(_settingsFile))
       {
         SetDefaultProperties();
         SaveFile();
       }
       else
       {
-        var jsonText = File.ReadAllText(SettingsFile);
+        var jsonText = File.ReadAllText(_settingsFile);
         _commonProperties = JsonConvert.DeserializeObject<CommonProperties>(jsonText);
-
       }
+      LoadConfigurationSettings(viewModel);
     }
 
     #region Load and Save
 
-    public static void LoadEmailSettings(EmailViewModel viewModel)
+    public void LoadEmailSettings(EmailViewModel viewModel)
     {
       if (_commonProperties == null || _commonProperties.Version != Constants.Version) return;
       RestoreUserDetails(_commonProperties.UserProperties, viewModel);
     }
 
-    public static void LoadConfigurationSettings(MainViewModel viewModel)
+    public void LoadConfigurationSettings(MainViewModel viewModel)
     {
       if (_commonProperties == null || _commonProperties.Version != Constants.Version) return;
       RestoreConfiguration(_commonProperties.ConfigurationProperties, viewModel);
     }
 
-    public static void SaveEmailSettings(EmailViewModel viewModel)
+    public void SaveEmailSettings(EmailViewModel viewModel, SecureString password)
     {
       if (_commonProperties == null || _commonProperties.Version != Constants.Version)
       {
@@ -64,13 +64,13 @@ namespace TimeJobRecord.Data
         Subject = viewModel.Subject,
         ContactList = viewModel.EmailContacts.ToList(),
         UserName = viewModel.UserEmail,
-        Password = viewModel.UserPassword
+        Password = password
       };
       if (_commonProperties != null) _commonProperties.UserProperties = userProps;
       SaveFile();
     }
 
-    public static void SaveConfigurationSettings(MainViewModel viewModel)
+    public void SaveConfigurationSettings(MainViewModel viewModel)
     {
       if (_commonProperties == null || _commonProperties.Version != Constants.Version)
       {
@@ -101,7 +101,6 @@ namespace TimeJobRecord.Data
       viewModel.Subject = userProps.Subject;
       viewModel.BodyText = userProps.Body;
       viewModel.UserEmail = userProps.UserName;
-      viewModel.UserPassword = userProps.Password;
       viewModel.EmailContacts = new ObservableCollection<string>(userProps.ContactList);
     }
 
@@ -137,32 +136,35 @@ namespace TimeJobRecord.Data
         WorkingDaysPerWeek = 5,
         WorkingHoursPerWeek = 8
       };
+      var pass = new SecureString();
+      pass.AppendChar('a');
+      pass.AppendChar('1');
       var propUser = new UserProperties
       {
         Subject = "Vacations",
         Body = "",
         ContactList = new List<string> { "fmuenter@itworks.ec", "candrade@itworks.ec" },
         UserName = "emaldonado@itworks.ec",
-        Password = "Pwd1234"
+        Password = pass
       };
       _commonProperties.Version = Constants.Version;
       _commonProperties.ConfigurationProperties = propConfig;
       _commonProperties.UserProperties = propUser;
     }
 
-    private static void EnsureDirectory()
+    private void EnsureDirectory()
     {
-      var fileInfo = new FileInfo(SettingsFile);
+      var fileInfo = new FileInfo(_settingsFile);
       if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
       Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
-      File.Create(SettingsFile).Dispose();
+      File.Create(_settingsFile).Dispose();
     }
 
-    private static void SaveFile()
+    private void SaveFile()
     {
       var jsonText = JsonConvert.SerializeObject(_commonProperties);
       EnsureDirectory();
-      File.WriteAllText(SettingsFile, jsonText);
+      File.WriteAllText(_settingsFile, jsonText);
     }
 
     #endregion Functions

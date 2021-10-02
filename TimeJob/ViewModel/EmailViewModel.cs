@@ -1,9 +1,9 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using Microsoft.Win32;
+using System.Windows.Controls;
 using TimeJobRecord.Data;
 
 namespace TimeJobRecord.ViewModel
@@ -12,17 +12,21 @@ namespace TimeJobRecord.ViewModel
   {
     #region Fields
     //private static readonly int port = 587;
+    private readonly DataAccess _dataAccess;
+    private readonly PasswordBox _passwordBox;
 
     #endregion Fields
 
     #region Constructor
 
-    public EmailViewModel()
+    public EmailViewModel(DataAccess dataAccess, PasswordBox passwordBox)
     {
       InitGeneralSettings();
       EmailContacts = new ObservableCollection<string>();
-      DataAccess.LoadEmailSettings(this);
-      CmdSaveEmailSettings = new RelayCommand(CmdSaveEmailSettingsExecute);
+      _dataAccess = dataAccess;
+      _passwordBox = passwordBox;
+      _dataAccess.LoadEmailSettings(this);
+      CmdSaveEmailSettings = new RelayCommand<Window>(CmdSaveEmailSettingsExecute);
     }
     #endregion Constructor
 
@@ -34,14 +38,6 @@ namespace TimeJobRecord.ViewModel
     {
       get => _userEmail;
       set { _userEmail = value; RaisePropertyChanged(); }
-    }
-
-    private string _userPassword;
-
-    public string UserPassword
-    {
-      get => _userPassword;
-      set { _userPassword = value; RaisePropertyChanged(); }
     }
 
     private string _emailContact;
@@ -68,17 +64,10 @@ namespace TimeJobRecord.ViewModel
       get => _subject;
       set { _subject = value; RaisePropertyChanged(); }
     }
-
-    private string _fileAttachmentLocation;
-
-    public string FileAttachmentLocation
-    {
-      get => _fileAttachmentLocation;
-      set { _fileAttachmentLocation = value; RaisePropertyChanged(); }
-    }
-
+    
     private string _bodyText;
-    public  string BodyText
+
+    public string BodyText
     {
       get => _bodyText;
       set { _bodyText = value; RaisePropertyChanged(); }
@@ -89,7 +78,6 @@ namespace TimeJobRecord.ViewModel
     private void InitGeneralSettings()
     {
       CmdDeleteEmail = new RelayCommand(CmdDeleteEmailExecute);
-      CmdOpenFileAttachmentLocation = new RelayCommand(CmdOpenFileAttachmentLocationExecute);
       CmdAddEmail = new RelayCommand(CmdAddEmailExecute);
     }
 
@@ -97,42 +85,28 @@ namespace TimeJobRecord.ViewModel
 
     #region Commands
 
-    public RelayCommand CmdSaveEmailSettings { get; set; }
+    public RelayCommand<Window> CmdSaveEmailSettings { get; set; }
 
-    private void CmdSaveEmailSettingsExecute()
+    private void CmdSaveEmailSettingsExecute(Window window)
     {
-      DataAccess.SaveEmailSettings(this);
+      _dataAccess.SaveEmailSettings(this, _passwordBox.SecurePassword);
+      window?.Close();
     }
 
     public RelayCommand CmdDeleteEmail { get; set; }
 
     private void CmdDeleteEmailExecute()
     {
-      if (_selectedEmail != null)
+      if (_selectedEmail == null) return;
+      var index = EmailContacts.IndexOf(_selectedEmail) - 1;
+      EmailContacts.Remove(_selectedEmail);
+      if (EmailContacts.Count == 0)
       {
-        var index = EmailContacts.IndexOf(_selectedEmail) - 1;
-        EmailContacts.Remove(_selectedEmail);
-        if (EmailContacts.Count == 0)
-        {
-          _selectedEmail = null;
-          return;
-        }
-        _selectedEmail = index > 0 ? EmailContacts[index] : EmailContacts[0];
-        RaisePropertyChanged($"SelectedEmail");
+        _selectedEmail = null;
+        return;
       }
-    }
-
-    public RelayCommand CmdOpenFileAttachmentLocation { get; set; }
-
-    private void CmdOpenFileAttachmentLocationExecute()
-    {
-      var openFileDialog = new OpenFileDialog
-      {
-        Filter =
-          "Image files (*.jpg, *.jpeg, *.jpe, *.png) | *.jpg; *.jpeg; *.jpe; *.png |PDF (*.pdf) | *.pdf |All files (*.*) | *.* "
-      };
-      if (openFileDialog.ShowDialog() == true)
-        FileAttachmentLocation = openFileDialog.FileName;
+      _selectedEmail = index > 0 ? EmailContacts[index] : EmailContacts[0];
+      RaisePropertyChanged($"SelectedEmail");
     }
 
     public RelayCommand CmdAddEmail { get; set; }
