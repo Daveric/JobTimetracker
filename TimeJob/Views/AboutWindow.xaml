@@ -42,7 +42,7 @@
               TimeTracker.exe:
               <LineBreak/>
               <Hyperlink Command="{Binding CommandPath}">
-                <TextBlock Text="{Binding AppPath,Mode=OneWay}" />
+                <TextBlock Text="{Binding AppPath}" />
               </Hyperlink>
               <LineBreak/>
               Source code:
