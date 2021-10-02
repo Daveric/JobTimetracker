@@ -1,13 +1,15 @@
 ﻿using System.Windows.Navigation;
+using TimeJobRecord.ViewModel;
 
-namespace TimeJobRecord
+namespace TimeJobRecord.Views
 {
   public partial class AboutWindow
   {
     public AboutWindow()
     {
       InitializeComponent();
-      DataContext = ViewModelToUse.Vm;
+      var vm = new AboutInfoViewModel();
+      DataContext = vm;
     }
 
     private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)

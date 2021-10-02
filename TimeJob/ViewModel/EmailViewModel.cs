@@ -21,7 +21,7 @@ namespace TimeJobRecord.ViewModel
     {
       InitGeneralSettings();
       EmailContacts = new ObservableCollection<string>();
-      DataAccess.LoadSettings(this);
+      DataAccess.LoadEmailSettings(this);
       CmdSaveEmailSettings = new RelayCommand(CmdSaveEmailSettingsExecute);
     }
     #endregion Constructor
@@ -51,7 +51,7 @@ namespace TimeJobRecord.ViewModel
       set { _emailContact = value; RaisePropertyChanged(); }
     }
 
-    public ObservableCollection<string> EmailContacts { get; }
+    public ObservableCollection<string> EmailContacts { get; set; }
 
     private string _selectedEmail;
 
@@ -101,7 +101,7 @@ namespace TimeJobRecord.ViewModel
 
     private void CmdSaveEmailSettingsExecute()
     {
-      DataAccess.SaveSettings(this);
+      DataAccess.SaveEmailSettings(this);
     }
 
     public RelayCommand CmdDeleteEmail { get; set; }

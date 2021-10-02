@@ -11,22 +11,18 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using TimeJobRecord.Common;
 using TimeJobRecord.Data;
+using TimeJobRecord.Views;
 
 namespace TimeJobRecord.ViewModel
 {
   public class MainViewModel : ViewModelBase
   {
     #region Fields
-
-    private const string SoundPath = @"SoundFiles\";
-
-    private const string EndSession = "End Session";
-
-    private System.Windows.Forms.NotifyIcon _notifyIcon;
-
-    private static string TimeLoggingFile => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TimeJobTracking\TimeLogging.csv");
-
+    private readonly System.Windows.Forms.NotifyIcon _notifyIcon;
+    private DataAccess _dataAccess;
+    
     // flag for exit the application
     private bool _isExit = false;
 
@@ -36,17 +32,14 @@ namespace TimeJobRecord.ViewModel
 
     public MainViewModel()
     {
-      DataAccess.LoadConfiguration(this);
-
-      _notifyIcon = new System.Windows.Forms.NotifyIcon();
+      _dataAccess = new DataAccess();
+      _notifyIcon = new System.Windows.Forms.NotifyIcon{Visible = true};
       _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
       InitGeneralSettings();
-      _notifyIcon.Visible = true;
       CreateContextMenu();
 
       CmdCloseWindow = new RelayCommand<Window>(CmdCloseWindowExecute);
       CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
-      CommandPath = new RelayCommand(CmdCommandPath);
     }
 
     #endregion Constructor
@@ -61,9 +54,8 @@ namespace TimeJobRecord.ViewModel
     private TimeSpan _timeToGoMaximum;
     private TimeSpan _extraTimeWorked;
 
-    public string AppPath => AppDomain.CurrentDomain.BaseDirectory;
-    public string UrlPath => "https://github.com/Daveric/Timer-Job-Tracker";
-
+    private static string TimeLoggingFile => Constants.FileLocationName;
+    
     public string ExtraTimeWorked
     {
       get =>
@@ -195,10 +187,8 @@ namespace TimeJobRecord.ViewModel
         _selectedAlertSound = value;
         foreach (var item in SoundsDict)
         {
-          if (item.Key == _selectedAlertSound)
-          {
-            _alertSoundPath = item.Value;
-          }
+          if (item.Key != _selectedAlertSound) continue;
+          _alertSoundPath = item.Value;
         }
       }
     }
@@ -214,10 +204,8 @@ namespace TimeJobRecord.ViewModel
         _selectedWarningSound = value;
         foreach (var item in SoundsDict)
         {
-          if (item.Key == _selectedWarningSound)
-          {
-            _warningSoundPath = item.Value;
-          }
+          if (item.Key != _selectedWarningSound) continue;
+          _warningSoundPath = item.Value;
         }
       }
     }
@@ -238,10 +226,7 @@ namespace TimeJobRecord.ViewModel
       set { _emailCheckBox = value; RaisePropertyChanged("DisplayEmailButton"); }
     }
 
-    public Visibility DisplayEmailButton
-    {
-      get => EmailCheckBox ? Visibility.Visible : Visibility.Hidden;
-    }
+    public Visibility DisplayEmailButton => EmailCheckBox ? Visibility.Visible : Visibility.Hidden;
 
     private bool _soundWarning;
 
@@ -251,17 +236,14 @@ namespace TimeJobRecord.ViewModel
       set { _soundWarning = value; RaisePropertyChanged("IsEnabled"); }
     }
 
-    public string Warning
-    {
-      get => Properties.Resources.Warning;
-    }
+    public string Warning => Properties.Resources.Warning;
 
-    private bool _mininizeOnStartUp;
+    private bool _minimizeOnStartUp;
 
     public bool MinimizeOnStartUp
     {
-      get => _mininizeOnStartUp;
-      set { _mininizeOnStartUp = value; RaisePropertyChanged(); }
+      get => _minimizeOnStartUp;
+      set { _minimizeOnStartUp = value; RaisePropertyChanged(); }
     }
 
     private bool _displayConfig;
@@ -273,7 +255,7 @@ namespace TimeJobRecord.ViewModel
       {
         _displayConfig = value;
         RaisePropertyChanged("DisplayConfiguration");
-        RaisePropertyChanged("DisplayDataCSV");
+        RaisePropertyChanged("DisplayDataCsv");
       }
     }
 
@@ -299,7 +281,7 @@ namespace TimeJobRecord.ViewModel
       DisplayConfig = false;
       SaveDataOnCSVFile(TimeLogFileLocation);
       LoadCSVOnDataGridView(TimeLogFileLocation);
-      RaisePropertyChanged("DataCSV");
+      RaisePropertyChanged("DataCsv");
     }
 
     public RelayCommand CmdAddSounds { get; private set; }
@@ -314,7 +296,7 @@ namespace TimeJobRecord.ViewModel
       {
         try
         {
-          File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SoundPath + Path.GetFileName(openFile.FileName)));
+          File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.SoundPath + Path.GetFileName(openFile.FileName)));
           ChargeSoundFiles();
         }
         catch (Exception e)
@@ -328,18 +310,11 @@ namespace TimeJobRecord.ViewModel
 
     private void CmdSaveSettingsExecute()
     {
-      DataAccess.SaveConfiguration(this);
+      DataAccess.SaveConfigurationSettings(this);
       DisplayConfig = false;
       SaveDataOnCSVFile(TimeLogFileLocation);
       LoadCSVOnDataGridView(TimeLogFileLocation);
-      RaisePropertyChanged("DataCSV");
-    }
-
-    public RelayCommand CommandPath { get; set; }
-
-    private void CmdCommandPath()
-    {
-      System.Diagnostics.Process.Start("explorer.exe", $"{AppPath}");
+      RaisePropertyChanged("DataCsv");
     }
     
     public RelayCommand CmdTrackTime { get; private set; }
@@ -349,7 +324,7 @@ namespace TimeJobRecord.ViewModel
       if (TimeLogging)
       {
         LoadCSVOnDataGridView(TimeLogFileLocation);
-        RaisePropertyChanged("DataCSV");
+        RaisePropertyChanged("DataCsv");
       }
       else
       {
@@ -371,9 +346,9 @@ namespace TimeJobRecord.ViewModel
     {
       SaveDataOnCSVFile(TimeLogFileLocation);
       LoadCSVOnDataGridView(TimeLogFileLocation);
-      RaisePropertyChanged("DataCSV");
-      var extrawnd = new ExtraTimeWindow();
-      extrawnd.ShowDialog();
+      RaisePropertyChanged("DataCsv");
+      var extraWnd = new ExtraTimeWindow(this);
+      extraWnd.ShowDialog();
     }
 
     public RelayCommand CmdReset { get; private set; }
@@ -477,18 +452,18 @@ namespace TimeJobRecord.ViewModel
       var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
-        if (TimeSpan.Compare(TimeSpan.Zero, _regularEndTime - _timeNow) == 0 && SoundWarning)
+        var time = _regularEndTime - _timeNow;
+        var timeToCompare = new TimeSpan(time.Days, time.Hours, time.Minutes, time.Seconds);
+        if (TimeSpan.Compare(TimeSpan.Zero, timeToCompare) != 0 || !SoundWarning) return;
+        timer.Stop();
+        try
         {
-          //timer.Stop();
-          try
-          {
-            ActivateAlarm(_warningSoundPath);
-            MessageBox.Show("You raised the Warning time to work", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-          }
-          catch (Exception ex)
-          {
-            MessageBox.Show(ex.Message, "Message", MessageBoxButton.OK, MessageBoxImage.Error);
-          }
+          ActivateAlarm(_warningSoundPath);
+          MessageBox.Show("You raised the Warning time to work", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message, "Message", MessageBoxButton.OK, MessageBoxImage.Error);
         }
       };
       timer.Start();
@@ -499,24 +474,24 @@ namespace TimeJobRecord.ViewModel
       var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += (s, e) =>
       {
-        if (TimeSpan.Compare(TimeSpan.Zero, _maximumEndTime - _timeNow) == 0 && SoundWarning)
+        var time = _maximumEndTime - _timeNow;
+        var timeToCompare = new TimeSpan(time.Days, time.Hours, time.Minutes, time.Seconds);
+        if (TimeSpan.Compare(TimeSpan.Zero, timeToCompare) != 0 || !SoundWarning) return;
+        timer.Stop();
+        try
         {
-          //timer.Stop();
-          try
-          {
-            ActivateAlarm(_alertSoundPath);
-            MessageBox.Show("You raised the Alert time to work, you must go home", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-          }
-          catch (Exception ex)
-          {
-            MessageBox.Show(ex.Message, "Message", MessageBoxButton.OK, MessageBoxImage.Error);
-          }
+          ActivateAlarm(_alertSoundPath);
+          MessageBox.Show("You raised the Alert time to work, you must go home", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message, "Message", MessageBoxButton.OK, MessageBoxImage.Error);
         }
       };
       timer.Start();
     }
     
-    private DateTime? GetFirstLoginToMachine()
+    private DateTime GetFirstLoginToMachine()
     {
       CheckDataCsv(DateTime.Today.ToString(@"d"), out var csvLogon);
       var loginTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
@@ -526,7 +501,6 @@ namespace TimeJobRecord.ViewModel
         return csvLogon < loginTime ? csvLogon : loginTime;
       }
       return loginTime;
-
     }
 
     private void UpdateTimers()
@@ -587,15 +561,14 @@ namespace TimeJobRecord.ViewModel
 
     public void ExitApplication()
     {
-      DataAccess.SaveConfiguration(this);
+      DataAccess.SaveConfigurationSettings(this);
       SaveDataOnCSVFile(TimeLogFileLocation);
       _isExit = true;
       Application.Current.Shutdown();
-      _notifyIcon.Dispose();
-      _notifyIcon = null;
+      _notifyIcon?.Dispose();
     }
 
-    private void ShowMainWindow()
+    private static void ShowMainWindow()
     {
       if (Application.Current.MainWindow != null && Application.Current.MainWindow.IsVisible)
       {
@@ -610,7 +583,8 @@ namespace TimeJobRecord.ViewModel
     private void InitGeneralSettings()
     {
       LoadCSVOnDataGridView(TimeLogFileLocation);
-      StartTime = GetFirstLoginToMachine().GetValueOrDefault();
+      var startTime = GetFirstLoginToMachine();
+      StartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day, startTime.Hour, startTime.Minute, startTime.Second);
       StartTimer();
       RemainingTimerToGo();
       ChargeSoundFiles();
@@ -637,7 +611,7 @@ namespace TimeJobRecord.ViewModel
     {
       SoundsDict = new Dictionary<string, string>();
       SoundsList = new List<string>();
-      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SoundPath);
+      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.SoundPath);
       if (!Directory.Exists(path))
       {
         Directory.CreateDirectory(path);
@@ -656,7 +630,7 @@ namespace TimeJobRecord.ViewModel
         Properties.Resources.RunForrest.CopyTo(output);
       }
 
-      string[] files = Directory.GetFiles(path, "*.wav");
+      var files = Directory.GetFiles(path, "*.wav");
       if (files.Length == 0) return;
       foreach (var sound in files)
       {
@@ -685,14 +659,14 @@ namespace TimeJobRecord.ViewModel
 
     #region DataCVS
 
-    private DataTable _dataCSV;
+    private DataTable _dataCsv;
 
-    public DataTable DataCSV
+    public DataTable DataCsv
     {
-      get => _dataCSV;
+      get => _dataCsv;
       set
       {
-        _dataCSV = value;
+        _dataCsv = value;
         RaisePropertyChanged();
       }
     }
@@ -700,14 +674,14 @@ namespace TimeJobRecord.ViewModel
     private void CheckDataCsv(string todayDate, out DateTime value)
     {
       value = DateTime.Now;
-      for (var i = DataCSV.Rows.Count - 1; i == 0; i--)
+      for (var i = DataCsv.Rows.Count - 1; i == 0; i--)
       {
-        var row = DataCSV.Rows[i];
+        var row = DataCsv.Rows[i];
         var fields = row.ItemArray.Select(field => field.ToString());
         var enumerable = fields as string[] ?? fields.ToArray();
         var fieldLine = string.Join(",", enumerable);
         if (!fieldLine.Contains(todayDate) || !DateTime.TryParse(enumerable.ElementAt(1), out var dateValue) ||
-            enumerable.Last().Contains(EndSession)) continue;
+            enumerable.Last().Contains(Constants.EndSession)) continue;
         value = dateValue;
         break;
       }
@@ -728,9 +702,9 @@ namespace TimeJobRecord.ViewModel
         
         _extraTimeWorked = TimeSpan.Zero;
 
-        var columnNames = DataCSV.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+        var columnNames = DataCsv.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
         csv.AppendLine(string.Join(",", columnNames));
-        foreach (DataRow row in DataCSV.Rows)
+        foreach (DataRow row in DataCsv.Rows)
         {
           var fields = row.ItemArray.Select(field => field.ToString());
           var enumerable = fields as string[] ?? fields.ToArray();
@@ -745,7 +719,7 @@ namespace TimeJobRecord.ViewModel
             remark = enumerable.Last();
           }
 
-          _extraTimeWorked = _extraTimeWorked + TimeSpan.Parse(enumerable[3]);
+          _extraTimeWorked += TimeSpan.Parse(enumerable[3]);
         }
 
         RaisePropertyChanged("ExtraTimeWorked");
@@ -761,6 +735,18 @@ namespace TimeJobRecord.ViewModel
       }
     }
 
+    private static void EnsureDirectory(string path)
+    {
+      var fileInfo = new FileInfo(path);
+      if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
+      Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
+      File.Create(path).Dispose();
+      
+      var line = new StringBuilder();
+      line.AppendLine("Date,Start,End,Extra time,Remark (!only one line!)");
+      File.WriteAllText(path, line.ToString());
+    }
+
     private void LoadCSVOnDataGridView(string fileName)
     {
       try
@@ -768,7 +754,7 @@ namespace TimeJobRecord.ViewModel
         if (!File.Exists(fileName) || (fileName == null))
         {
           fileName = TimeLoggingFile;
-          DataAccess.EnsureDirectory(fileName);
+          EnsureDirectory(fileName);
           TimeLogFileLocationName = fileName;
           RaisePropertyChanged("TimeLogFileLocationName");
         }
@@ -776,7 +762,7 @@ namespace TimeJobRecord.ViewModel
         var csv = new ImportCsv(fileName);
         try
         {
-          DataCSV = csv.ReadCsv;
+          DataCsv = csv.ReadCsv;
         }
         catch (Exception ex)
         {

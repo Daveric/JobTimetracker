@@ -85,6 +85,9 @@
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -115,25 +118,34 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtraTimeWindow.xaml.cs">
+    <Compile Include="Models\CommonProperties.cs" />
+    <Compile Include="Models\ConfigurationProperties.cs" />
+    <Compile Include="Models\UserProperties.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\AboutInfoViewModel.cs" />
+    <Compile Include="Views\ExtraTimeWindow.xaml.cs">
       <DependentUpon>ExtraTimeWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Constants.cs" />
+    <Compile Include="Common\Constants.cs" />
     <Compile Include="Data\DataAccess.cs" />
-    <Compile Include="AboutWindow.xaml.cs">
+    <Compile Include="Views\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PopUpWindow.xaml.cs">
+    <Compile Include="Views\PopUpWindow.xaml.cs">
       <DependentUpon>PopUpWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EmailWindow.xaml.cs">
+    <Compile Include="Views\EmailWindow.xaml.cs">
       <DependentUpon>EmailWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\EmailViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ImportCsv.cs" />
+    <Compile Include="Data\ImportCsv.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Page Include="ExtraTimeWindow.xaml">
+    <Page Include="Views\ExtraTimeWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -141,19 +153,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="AboutWindow.xaml">
+    <Page Include="Views\AboutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="PopUpWindow.xaml">
+    <Page Include="Views\PopUpWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="EmailWindow.xaml">
+    <Page Include="Views\EmailWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -161,7 +173,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -170,20 +182,15 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest">
       <SubType>Designer</SubType>
@@ -200,23 +207,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\close.png" />
+    <Resource Include="Icons\close.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\OpenFileLocation.png" />
-    <Resource Include="Images\timerconfig.png" />
-    <Resource Include="Data\Settings.xml">
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Images\clock.ico" />
-    <Resource Include="Images\alertclock.ico" />
-    <Resource Include="Images\warningclock.ico" />
-    <Resource Include="Images\deactivate.png" />
-    <Resource Include="Images\reset.png" />
-    <Resource Include="Images\help_about.png" />
-    <Resource Include="Images\language.png" />
+    <Resource Include="Icons\OpenFileLocation.png" />
+    <Resource Include="Icons\timerconfig.png" />
+    <Resource Include="Icons\clock.ico" />
+    <Resource Include="Icons\alertclock.ico" />
+    <Resource Include="Icons\warningclock.ico" />
+    <Resource Include="Icons\deactivate.png" />
+    <Resource Include="Icons\reset.png" />
+    <Resource Include="Icons\help_about.png" />
+    <Resource Include="Icons\language.png" />
     <Resource Include="icon.ico" />
-    <Resource Include="Images\icon.png" />
+    <Resource Include="Icons\icon.png" />
     <Content Include="SoundFiles\Aoogah.wav" />
     <Content Include="SoundFiles\Disconnect.wav" />
     <Content Include="SoundFiles\Explosion.wav" />
@@ -239,6 +243,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

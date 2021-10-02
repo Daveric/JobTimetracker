@@ -19,10 +19,10 @@ namespace TimeJobRecord.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace TimeJobRecord.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TimeJobRecord.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace TimeJobRecord.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon alertclock {
+        public static System.Drawing.Icon alertclock {
             get {
                 object obj = ResourceManager.GetObject("alertclock", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -73,7 +73,7 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon clock {
+        public static System.Drawing.Icon clock {
             get {
                 object obj = ResourceManager.GetObject("clock", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -81,49 +81,107 @@ namespace TimeJobRecord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap close {
+            get {
+                object obj = ResourceManager.GetObject("close", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap deactivate {
+            get {
+                object obj = ResourceManager.GetObject("deactivate", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap help_about {
+            get {
+                object obj = ResourceManager.GetObject("help_about", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap icon {
+            get {
+                object obj = ResourceManager.GetObject("icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream KLAXXON {
+        public static System.IO.UnmanagedMemoryStream KLAXXON {
             get {
                 return ResourceManager.GetStream("KLAXXON", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap language {
+            get {
+                object obj = ResourceManager.GetObject("language", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap OpenFileLocation {
+            get {
+                object obj = ResourceManager.GetObject("OpenFileLocation", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap reset {
+            get {
+                object obj = ResourceManager.GetObject("reset", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream RunForrest {
+        public static System.IO.UnmanagedMemoryStream RunForrest {
             get {
                 return ResourceManager.GetStream("RunForrest", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
-        ///&lt;CommonProperties version=&quot;1&quot;&gt;
-        ///  &lt;Properties&gt;
-        ///    &lt;Properties name=&quot;UserDetails&quot;&gt;
-        ///      &lt;Property name=&quot;User&quot;&gt;&lt;/Property&gt;
-        ///      &lt;Property name=&quot;Password&quot;&gt;&lt;/Property&gt;
-        ///    &lt;/Properties&gt;
-        ///    &lt;Properties name=&quot;Contacts&quot;&gt;
-        ///      &lt;Property name=&quot;Contact&quot;&gt;&lt;/Property&gt;
-        ///    &lt;/Properties&gt;
-        ///    &lt;Properties name=&quot;EmailDetails&quot;&gt;
-        ///      &lt;Property name=&quot;Subject&quot;&gt;&lt;/Property&gt;
-        ///      &lt;Property name=&quot;FileAttachment&quot;&gt;&lt;/Property&gt;
-        ///      &lt;Property name=&quot;BodyText&quot;&gt;&lt;/P [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string Settings {
+        public static System.Drawing.Bitmap timerconfig {
             get {
-                return ResourceManager.GetString("Settings", resourceCulture);
+                object obj = ResourceManager.GetObject("timerconfig", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Trumpet {
+        public static System.IO.UnmanagedMemoryStream Trumpet {
             get {
                 return ResourceManager.GetStream("Trumpet", resourceCulture);
             }
@@ -132,7 +190,7 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
-        internal static string Warning {
+        public static string Warning {
             get {
                 return ResourceManager.GetString("Warning", resourceCulture);
             }
@@ -141,7 +199,7 @@ namespace TimeJobRecord.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon warningclock {
+        public static System.Drawing.Icon warningclock {
             get {
                 object obj = ResourceManager.GetObject("warningclock", resourceCulture);
                 return ((System.Drawing.Icon)(obj));

@@ -1,6 +1,6 @@
 ﻿using TimeJobRecord.ViewModel;
 
-namespace TimeJobRecord
+namespace TimeJobRecord.Views
 {
   public partial class EmailWindow
   {

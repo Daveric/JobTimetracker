@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
+using TimeJobRecord.Views;
 
 namespace TimeJobRecord
 {
