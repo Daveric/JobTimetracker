@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security;
 
-namespace TimeJobRecord.Models
+namespace JobTimeTracker.Models
 {
   public class UserProperties
   {

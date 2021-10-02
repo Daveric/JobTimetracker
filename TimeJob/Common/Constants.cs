@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TimeJobRecord.Common
+namespace JobTimeTracker.Common
 {
   public static class Constants
   {

@@ -1,8 +1,8 @@
 ﻿using System;
 using GalaSoft.MvvmLight.Command;
-using TimeJobRecord.Common;
+using JobTimeTracker.Common;
 
-namespace TimeJobRecord.ViewModel
+namespace JobTimeTracker.ViewModel
 {
   public class AboutInfoViewModel
   {

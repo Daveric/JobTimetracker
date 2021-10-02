@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9883A38B-763F-4D31-A33A-D149BB423908}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TimeJobRecord</RootNamespace>
-    <AssemblyName>TimeJobRecord</AssemblyName>
+    <RootNamespace>JobTimeTracker</RootNamespace>
+    <AssemblyName>JobTimeTracker</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -56,7 +56,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TimeJobRecord.App</StartupObject>
+    <StartupObject>JobTimeTracker.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>

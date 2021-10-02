@@ -5,11 +5,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security;
-using TimeJobRecord.Common;
-using TimeJobRecord.Models;
-using TimeJobRecord.ViewModel;
+using JobTimeTracker.Common;
+using JobTimeTracker.Models;
+using JobTimeTracker.ViewModel;
 
-namespace TimeJobRecord.Data
+namespace JobTimeTracker.Data
 {
   public class DataAccess
   {

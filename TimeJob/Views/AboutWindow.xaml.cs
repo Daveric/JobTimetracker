@@ -1,7 +1,7 @@
 ﻿using System.Windows.Navigation;
-using TimeJobRecord.ViewModel;
+using JobTimeTracker.ViewModel;
 
-namespace TimeJobRecord.Views
+namespace JobTimeTracker.Views
 {
   public partial class AboutWindow
   {

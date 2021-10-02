@@ -1,4 +1,4 @@
-﻿namespace TimeJobRecord.Models
+﻿namespace JobTimeTracker.Models
 {
   public class ConfigurationProperties
   {

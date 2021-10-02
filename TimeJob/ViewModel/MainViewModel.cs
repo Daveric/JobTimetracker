@@ -11,11 +11,11 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using TimeJobRecord.Common;
-using TimeJobRecord.Data;
-using TimeJobRecord.Views;
+using JobTimeTracker.Common;
+using JobTimeTracker.Data;
+using JobTimeTracker.Views;
 
-namespace TimeJobRecord.ViewModel
+namespace JobTimeTracker.ViewModel
 {
   public class MainViewModel : ViewModelBase
   {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
-using TimeJobRecord.ViewModel;
+using JobTimeTracker.ViewModel;
 
-namespace TimeJobRecord.Views
+namespace JobTimeTracker.Views
 {
   public partial class MainWindow
   {

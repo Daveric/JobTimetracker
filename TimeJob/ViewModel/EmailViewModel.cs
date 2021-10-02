@@ -4,9 +4,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using TimeJobRecord.Data;
+using JobTimeTracker.Data;
 
-namespace TimeJobRecord.ViewModel
+namespace JobTimeTracker.ViewModel
 {
   public class EmailViewModel : ViewModelBase
   {

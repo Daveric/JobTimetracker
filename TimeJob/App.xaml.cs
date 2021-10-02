@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
-using TimeJobRecord.Views;
+using JobTimeTracker.Views;
 
-namespace TimeJobRecord
+namespace JobTimeTracker
 {
   /// <inheritdoc>
   ///   <cref></cref>
