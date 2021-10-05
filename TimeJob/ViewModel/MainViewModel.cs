@@ -416,9 +416,20 @@ namespace JobTimeTracker.ViewModel
     {
       var openFileDialog = new OpenFileDialog
       {
-        Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv"
+        Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*"
       };
       if (openFileDialog.ShowDialog() == true) TimeLogFileLocationName = Path.GetFullPath(openFileDialog.FileName);
+    }
+
+    public RelayCommand CmdResetTimeSheet { get; set; }
+
+    private void CmdResetTimeSheetExecute()
+    {
+      if (File.Exists(TimeLogFileLocation))
+      {
+        File.Delete(TimeLogFileLocation);
+      }
+      LoadCSVOnDataGridView(TimeLogFileLocation);
     }
 
     #endregion Commands
@@ -453,6 +464,7 @@ namespace JobTimeTracker.ViewModel
       CmdLanguage = new RelayCommand(CmdLanguageExecute);
       CmdAbout = new RelayCommand(CmdAboutExecute);
       CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
+      CmdResetTimeSheet = new RelayCommand(CmdResetTimeSheetExecute);
     }
 
     private void RegisterApp()

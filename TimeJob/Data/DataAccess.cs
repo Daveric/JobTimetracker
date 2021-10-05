@@ -137,7 +137,7 @@ namespace JobTimeTracker.Data
         TimeLogFileLocationName = Constants.FileLocationName,
         TimeLogging = true,
         WorkingDaysPerWeek = 5,
-        WorkingHoursPerWeek = 8
+        WorkingHoursPerWeek = 40
       };
       var pass = new SecureString();
       pass.AppendChar('a');

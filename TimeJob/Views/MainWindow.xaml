@@ -140,9 +140,17 @@
                 <Label Content="Time sheet" Margin="2,0"/>
               </StackPanel>
             </TabItem.Header>
-            <DataGrid ItemsSource="{Binding DataCsv, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                      CanUserAddRows="True" SelectionUnit="Cell" Margin="2">
-            </DataGrid>
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
+              <DataGrid Grid.Row ="0"  ItemsSource="{Binding DataCsv, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        CanUserAddRows="True" SelectionUnit="Cell" Margin="2" VerticalScrollBarVisibility="Auto">
+              </DataGrid>
+              <Button Grid.Row="1" Content="Reset" Width="80" HorizontalAlignment="Right" 
+                      Margin="20,8" Command="{Binding CmdResetTimeSheet}"/>
+            </Grid>
           </TabItem>
           <TabItem>
             <TabItem.Header>
