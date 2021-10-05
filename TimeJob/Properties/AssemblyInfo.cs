@@ -6,12 +6,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Job Time Record")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Job Time Tracker")]
+[assembly: AssemblyDescription("Records the time worked daily by your machine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Information Technologies ITWORKS")]
-[assembly: AssemblyProduct("ITWORKS® Job Time Record")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyProduct("ITWORKS® Job Time Tracker")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

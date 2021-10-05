@@ -460,14 +460,15 @@ namespace JobTimeTracker.ViewModel
       try
       {
         var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        if (key == null) return;
         var curAssembly = Assembly.GetExecutingAssembly();
         var currentAssemblyName = curAssembly.GetName().Name;
-        var valueExists = key?.GetSubKeyNames().Contains(currentAssemblyName);
-        if (valueExists == false && ExecuteOnStartUp)
+        var valueExists  = key.GetValueNames().Contains(currentAssemblyName);
+        if (!valueExists && ExecuteOnStartUp)
         {
           key.SetValue(currentAssemblyName, curAssembly.Location);
         }
-        else if (valueExists == true)
+        else if (valueExists)
         {
           key.DeleteValue(currentAssemblyName);
         }
