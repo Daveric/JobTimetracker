@@ -96,7 +96,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -223,6 +222,9 @@
     <Resource Include="icon.ico" />
     <Resource Include="Icons\seetime.png" />
     <Resource Include="Icons\file.png" />
+    <Resource Include="Icons\hide.png" />
+    <Resource Include="Icons\maximize.png" />
+    <Resource Include="Icons\minimize.png" />
     <Content Include="SoundFiles\Aoogah.wav" />
     <Content Include="SoundFiles\Disconnect.wav" />
     <Content Include="SoundFiles\Explosion.wav" />

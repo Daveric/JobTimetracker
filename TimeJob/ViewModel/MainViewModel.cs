@@ -1,19 +1,23 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
 using System.Text;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
 using JobTimeTracker.Common;
 using JobTimeTracker.Data;
 using JobTimeTracker.Views;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace JobTimeTracker.ViewModel
 {
@@ -22,7 +26,8 @@ namespace JobTimeTracker.ViewModel
     #region Fields
     private readonly System.Windows.Forms.NotifyIcon _notifyIcon;
     private readonly DataAccess _dataAccess;
-    
+    private readonly Window _currentWindow = Application.Current.MainWindow;
+
     // flag for exit the application
     private bool _isExit;
 
@@ -510,10 +515,22 @@ namespace JobTimeTracker.ViewModel
 
     private void CreateContextMenu()
     {
-      _notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
-      _notifyIcon.ContextMenuStrip.Items.Add("Restore").Click += (s, e) => ShowMainWindow();
+      _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+      var menuItem = new ToolStripMenuItem("Maximize", Properties.Resources.maximize, (s, e) => ShowMainWindow());
+      _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
+      menuItem = new ToolStripMenuItem("Minimize", Properties.Resources.minimize, (s, e) => MinimizeWindow());
+      _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
       _notifyIcon.ContextMenuStrip.Items.Add("-");
-      _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, e) => ExitApplication();
+      menuItem = new ToolStripMenuItem("Hide", Properties.Resources.hide, (s, e) => _currentWindow.Hide());
+      _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
+      menuItem = new ToolStripMenuItem("Exit", Properties.Resources.close, (s, e) => ExitApplication());
+      _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
+    }
+
+    private void MinimizeWindow()
+    {
+      if (_currentWindow == null) return;
+      _currentWindow.WindowState = WindowState.Minimized;
     }
 
     public void ExitApplication()
@@ -525,16 +542,11 @@ namespace JobTimeTracker.ViewModel
       _notifyIcon?.Dispose();
     }
 
-    private static void ShowMainWindow()
+    private void ShowMainWindow()
     {
-      if (Application.Current.MainWindow != null && Application.Current.MainWindow.IsVisible)
-      {
-        if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-          Application.Current.MainWindow.WindowState = WindowState.Normal;
-        Application.Current.MainWindow.Activate();
-      }
-      else
-        Application.Current.MainWindow?.Show();
+      if (_currentWindow == null) return;
+      _currentWindow.Show();
+      _currentWindow.WindowState = WindowState.Normal;
     }
 
     private void InitGeneralSettings()
