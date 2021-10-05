@@ -11,9 +11,13 @@ namespace JobTimeTracker.Views
       InitializeComponent();
       var vm = new MainViewModel();
       DataContext = vm;
+      if (vm.MinimizeOnStartUp)
+      {
+        Hide();
+      }
     }
 
-    protected void CmdMinimizeToTray(object sender, RoutedEventArgs e)
+    private void CmdMinimizeToTray(object sender, RoutedEventArgs e)
     {
       Hide();
     }

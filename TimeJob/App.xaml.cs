@@ -1,8 +1,8 @@
-﻿using System;
+﻿using JobTimeTracker.Views;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
-using JobTimeTracker.Views;
 
 namespace JobTimeTracker
 {
@@ -19,7 +19,7 @@ namespace JobTimeTracker
     protected override void OnStartup(StartupEventArgs e)
     {
       base.OnStartup(e);
-      MainWindow  = new MainWindow();
+      MainWindow = new MainWindow();
       MainWindow.Closing += MainWindow_Closing;
     }
 
@@ -28,7 +28,7 @@ namespace JobTimeTracker
       e.Cancel = true;
       MainWindow?.Hide(); // A hidden window can be shown again, a closed one not
     }
-    
+
     [STAThread]
     public static void Main()
     {

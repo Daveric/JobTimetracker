@@ -12,5 +12,6 @@
     public bool SoundWarning { get; set; }
     public bool EmailCheckBox { get; set; }
     public bool MinimizeOnStartUp { get; set; }
+    public bool ExecuteOnStartUp { get; set; }
   }
 }

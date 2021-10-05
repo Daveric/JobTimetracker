@@ -80,6 +80,7 @@ namespace JobTimeTracker.Data
       var configProps = new ConfigurationProperties
       {
         MinimizeOnStartUp = viewModel.MinimizeOnStartUp,
+        ExecuteOnStartUp = viewModel.ExecuteOnStartUp,
         AlertTime = viewModel.MinutesAlert,
         LunchBreakTime = viewModel.MinutesBreak,
         EmailCheckBox = viewModel.EmailCheckBox,
@@ -107,6 +108,7 @@ namespace JobTimeTracker.Data
     private static void RestoreConfiguration(ConfigurationProperties configProps, MainViewModel viewModel)
     {
       viewModel.MinimizeOnStartUp = configProps.MinimizeOnStartUp;
+      viewModel.ExecuteOnStartUp = configProps.ExecuteOnStartUp;
       viewModel.MinutesAlert = configProps.AlertTime;
       viewModel.MinutesBreak = configProps.LunchBreakTime;
       viewModel.EmailCheckBox = configProps.EmailCheckBox;
@@ -130,6 +132,7 @@ namespace JobTimeTracker.Data
         ExtraTimeWorked = "0:00:00",
         LunchBreakTime = 30,
         MinimizeOnStartUp = true,
+        ExecuteOnStartUp = true,
         SoundWarning = true,
         TimeLogFileLocationName = Constants.FileLocationName,
         TimeLogging = true,

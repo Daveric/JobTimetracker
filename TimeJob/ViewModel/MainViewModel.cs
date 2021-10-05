@@ -1,20 +1,22 @@
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using JobTimeTracker.Common;
 using JobTimeTracker.Data;
+using JobTimeTracker.Properties;
 using JobTimeTracker.Views;
+using Microsoft.Win32;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -24,7 +26,8 @@ namespace JobTimeTracker.ViewModel
   public class MainViewModel : ViewModelBase
   {
     #region Fields
-    private readonly System.Windows.Forms.NotifyIcon _notifyIcon;
+
+    private readonly NotifyIcon _notifyIcon;
     private readonly DataAccess _dataAccess;
     private readonly Window _currentWindow = Application.Current.MainWindow;
 
@@ -38,13 +41,14 @@ namespace JobTimeTracker.ViewModel
     public MainViewModel()
     {
       _dataAccess = new DataAccess(this);
-      _notifyIcon = new System.Windows.Forms.NotifyIcon{Visible = true};
+      _notifyIcon = new NotifyIcon {Visible = true};
       _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
+
+      RegisterApp();
       InitGeneralSettings();
       CreateContextMenu();
 
-      CmdCloseWindow = new RelayCommand<Window>(CmdCloseWindowExecute);
-      CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
+      CmdCloseWindow = new RelayCommand(CmdCloseWindowExecute);
     }
 
     #endregion Constructor
@@ -60,7 +64,7 @@ namespace JobTimeTracker.ViewModel
     private TimeSpan _extraTimeWorked;
 
     private static string TimeLoggingFile => Constants.FileLocationName;
-    
+
     public string ExtraTimeWorked
     {
       get =>
@@ -76,25 +80,41 @@ namespace JobTimeTracker.ViewModel
     public DateTime StartTime
     {
       get => _startTime;
-      set { _startTime = value; UpdateTimers(); }
+      set
+      {
+        _startTime = value;
+        UpdateTimers();
+      }
     }
 
     public string TimeNow
     {
       get => _timeNow.ToString(@"HH:mm:ss");
-      set { _timeNow = Convert.ToDateTime(value); RaisePropertyChanged(); }
+      set
+      {
+        _timeNow = Convert.ToDateTime(value);
+        RaisePropertyChanged();
+      }
     }
 
     public string TimeToGo
     {
       get => _timeToGo.ToString();
-      set { _timeToGo = TimeSpan.Parse(value); RaisePropertyChanged(); }
+      set
+      {
+        _timeToGo = TimeSpan.Parse(value);
+        RaisePropertyChanged();
+      }
     }
 
     public string TimeToGoMaximum
     {
       get => _timeToGoMaximum.ToString();
-      set { _timeToGoMaximum = TimeSpan.Parse(value); RaisePropertyChanged(); }
+      set
+      {
+        _timeToGoMaximum = TimeSpan.Parse(value);
+        RaisePropertyChanged();
+      }
     }
 
     private int _workingHoursPerWeek;
@@ -102,9 +122,9 @@ namespace JobTimeTracker.ViewModel
     public int WorkingHoursPerWeek
     {
       get => _workingHoursPerWeek;
-      set 
-      { 
-        _workingHoursPerWeek = value; 
+      set
+      {
+        _workingHoursPerWeek = value;
         RaisePropertyChanged();
       }
     }
@@ -214,7 +234,11 @@ namespace JobTimeTracker.ViewModel
     public bool TimeLogging
     {
       get => _timeLogging;
-      set { _timeLogging = value; RaisePropertyChanged(); }
+      set
+      {
+        _timeLogging = value;
+        RaisePropertyChanged();
+      }
     }
 
     private bool _emailCheckBox;
@@ -222,7 +246,11 @@ namespace JobTimeTracker.ViewModel
     public bool EmailCheckBox
     {
       get => _emailCheckBox;
-      set { _emailCheckBox = value; RaisePropertyChanged("DisplayEmailButton"); }
+      set
+      {
+        _emailCheckBox = value;
+        RaisePropertyChanged("DisplayEmailButton");
+      }
     }
 
     public Visibility DisplayEmailButton => EmailCheckBox ? Visibility.Visible : Visibility.Hidden;
@@ -232,30 +260,50 @@ namespace JobTimeTracker.ViewModel
     public bool SoundWarning
     {
       get => _soundWarning;
-      set { _soundWarning = value; RaisePropertyChanged(); }
+      set
+      {
+        _soundWarning = value;
+        RaisePropertyChanged();
+      }
     }
 
-    public string Warning => Properties.Resources.Warning;
+    public string Warning => Resources.Warning;
 
     private bool _minimizeOnStartUp;
 
     public bool MinimizeOnStartUp
     {
       get => _minimizeOnStartUp;
-      set { _minimizeOnStartUp = value; RaisePropertyChanged(); }
+      set
+      {
+        _minimizeOnStartUp = value;
+        RaisePropertyChanged();
+      }
     }
-    
+
+    private bool _executeOnStartUp;
+
+    public bool ExecuteOnStartUp
+    {
+      get => _executeOnStartUp;
+      set
+      {
+        _executeOnStartUp = value;
+        RaisePropertyChanged();
+      }
+    }
+
     #endregion Properties
 
     #region Commands
 
-    public RelayCommand<Window> CmdCloseWindow { get; }
+    public RelayCommand CmdCloseWindow { get; }
 
-    private void CmdCloseWindowExecute(Window window)
+    private void CmdCloseWindowExecute()
     {
       ExitApplication();
     }
-    
+
     public RelayCommand CmdAddSounds { get; private set; }
 
     private void CmdAddSoundsExecute()
@@ -267,12 +315,14 @@ namespace JobTimeTracker.ViewModel
       if (openFile.ShowDialog() != true) return;
       try
       {
-        File.Copy(openFile.FileName, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.SoundPath + Path.GetFileName(openFile.FileName)));
+        File.Copy(openFile.FileName,
+          Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+            Constants.SoundPath + Path.GetFileName(openFile.FileName)));
         ChargeSoundFiles();
       }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message, Properties.Resources.Warning);
+        MessageBox.Show(e.Message, Resources.Warning);
       }
     }
 
@@ -281,11 +331,12 @@ namespace JobTimeTracker.ViewModel
     private void CmdSaveSettingsExecute()
     {
       _dataAccess.SaveConfigurationSettings(this);
+      RegisterApp();
       SaveDataOnCSVFile(TimeLogFileLocation);
       LoadCSVOnDataGridView(TimeLogFileLocation);
       RaisePropertyChanged("DataCsv");
     }
-    
+
     public RelayCommand CmdTrackTime { get; private set; }
 
     private void CmdTrackTimeExecute()
@@ -300,7 +351,7 @@ namespace JobTimeTracker.ViewModel
         MessageBox.Show("TimeLogging is deactivated", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
       }
     }
-    
+
     public RelayCommand CmdExtraTime { get; private set; }
 
     private void CmdExtraTimeExecute()
@@ -367,41 +418,86 @@ namespace JobTimeTracker.ViewModel
       {
         Filter = "All files (*.*)|*.*|CSV Files (*.csv)|*.csv"
       };
-      if (openFileDialog.ShowDialog() == true)
-      {
-        TimeLogFileLocationName = Path.GetFullPath(openFileDialog.FileName);
-      }
+      if (openFileDialog.ShowDialog() == true) TimeLogFileLocationName = Path.GetFullPath(openFileDialog.FileName);
     }
 
     #endregion Commands
 
     #region Functions
 
-    private void StartTimer()
+    private void InitGeneralSettings()
     {
-      var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+      LoadCSVOnDataGridView(TimeLogFileLocation);
+      var startTime = GetFirstLoginToMachine();
+      StartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day, startTime.Hour, startTime.Minute,
+        startTime.Second);
+
+      //Start Timer
+      var timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
       timer.Tick += (s, e) => TimeNow = DateTime.Now.ToString(@"HH:mm:ss");
       timer.Start();
+
+      RemainingTimerToGo();
+      ChargeSoundFiles();
+      TimerWarning();
+      TimerAlert();
+      CmdTrackTimeExecute();
+
+      CmdOpenLoggingFileLocation = new RelayCommand(CmdOpenLoggingFileLocationExecute);
+      CmdExtraTime = new RelayCommand(CmdExtraTimeExecute);
+      CmdAddSounds = new RelayCommand(CmdAddSoundsExecute);
+      CmdTrackTime = new RelayCommand(CmdTrackTimeExecute);
+      CmdEditMail = new RelayCommand(CmdEditMailExecute);
+      CmdReset = new RelayCommand(CmdResetExecute);
+      CmdDeactivate = new RelayCommand(CmdDeactivateExecute);
+      CmdLanguage = new RelayCommand(CmdLanguageExecute);
+      CmdAbout = new RelayCommand(CmdAboutExecute);
+      CmdSaveSettings = new RelayCommand(CmdSaveSettingsExecute);
+    }
+
+    private void RegisterApp()
+    {
+      try
+      {
+        var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        var curAssembly = Assembly.GetExecutingAssembly();
+        var currentAssemblyName = curAssembly.GetName().Name;
+        var valueExists = key?.GetSubKeyNames().Contains(currentAssemblyName);
+        if (valueExists == false && ExecuteOnStartUp)
+        {
+          key.SetValue(currentAssemblyName, curAssembly.Location);
+        }
+        else if (valueExists == true)
+        {
+          key.DeleteValue(currentAssemblyName);
+        }
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message, Resources.Warning, MessageBoxButton.OKCancel);
+      }
     }
 
     private void RemainingTimerToGo()
     {
-      var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+      var timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
       timer.Tick += (s, e) =>
       {
         var timeToGo = _regularEndTime - _timeNow;
         var signToGo = "";
         if (timeToGo < TimeSpan.Zero)
           signToGo = "-";
-        
-        TimeToGo = $"{signToGo}{Math.Abs(timeToGo.Hours):00}:{Math.Abs(timeToGo.Minutes):00}:{Math.Abs(timeToGo.Seconds):00}";
+
+        TimeToGo =
+          $"{signToGo}{Math.Abs(timeToGo.Hours):00}:{Math.Abs(timeToGo.Minutes):00}:{Math.Abs(timeToGo.Seconds):00}";
 
         var timeToGoMaximum = _maximumEndTime - _timeNow;
         var signToGoMaximum = "";
         if (timeToGoMaximum < TimeSpan.Zero)
           signToGoMaximum = "-";
 
-        TimeToGoMaximum = $"{signToGoMaximum}{Math.Abs(timeToGoMaximum.Hours):00}:{Math.Abs(timeToGoMaximum.Minutes):00}:{Math.Abs(timeToGoMaximum.Seconds):00}";
+        TimeToGoMaximum =
+          $"{signToGoMaximum}{Math.Abs(timeToGoMaximum.Hours):00}:{Math.Abs(timeToGoMaximum.Minutes):00}:{Math.Abs(timeToGoMaximum.Seconds):00}";
 
         UpdateTimersColor(timeToGo);
         ShowPopUpDialog(timeToGo, timeToGoMaximum);
@@ -411,7 +507,7 @@ namespace JobTimeTracker.ViewModel
 
     private void TimerWarning()
     {
-      var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
+      var timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
       timer.Tick += (s, e) =>
       {
         var time = _regularEndTime - _timeNow;
@@ -421,7 +517,8 @@ namespace JobTimeTracker.ViewModel
         try
         {
           ActivateAlarm(_warningSoundPath);
-          MessageBox.Show("You raised the Warning time to work", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+          MessageBox.Show("You raised the Warning time to work", "Warning", MessageBoxButton.OK,
+            MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {
@@ -433,7 +530,7 @@ namespace JobTimeTracker.ViewModel
 
     private void TimerAlert()
     {
-      var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
+      var timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
       timer.Tick += (s, e) =>
       {
         var time = _maximumEndTime - _timeNow;
@@ -443,7 +540,8 @@ namespace JobTimeTracker.ViewModel
         try
         {
           ActivateAlarm(_alertSoundPath);
-          MessageBox.Show("You raised the Alert time to work, you must go home", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+          MessageBox.Show("You raised the Alert time to work, you must go home", "Alert", MessageBoxButton.OK,
+            MessageBoxImage.Exclamation);
         }
         catch (Exception ex)
         {
@@ -452,16 +550,13 @@ namespace JobTimeTracker.ViewModel
       };
       timer.Start();
     }
-    
+
     private DateTime GetFirstLoginToMachine()
     {
       CheckDataCsv(DateTime.Today.ToString(@"d"), out var csvLogon);
       var loginTime = DateTime.Now.AddMilliseconds(-Environment.TickCount);
       if (!loginTime.Day.Equals(DateTime.Today.Day)) return csvLogon;
-      if (csvLogon.Day.Equals(loginTime.Day))
-      {
-        return csvLogon < loginTime ? csvLogon : loginTime;
-      }
+      if (csvLogon.Day.Equals(loginTime.Day)) return csvLogon < loginTime ? csvLogon : loginTime;
       return loginTime;
     }
 
@@ -480,50 +575,48 @@ namespace JobTimeTracker.ViewModel
       if (TimeSpan.Compare(TimeSpan.Zero, timeToGo) == 1 && TimeSpan.Compare(timeToGo, -_timeAlert) == 1 && !_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Orange);
-        _notifyIcon.Icon = Properties.Resources.warningclock;
+        _notifyIcon.Icon = Resources.warningclock;
       }
       else if (TimeSpan.Compare(-_timeAlert, timeToGo) == 1 || TimeSpan.Compare(-_timeAlert, timeToGo) == 0 && !_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Red);
-        _notifyIcon.Icon = Properties.Resources.alertclock;
+        _notifyIcon.Icon = Resources.alertclock;
       }
       else if (!_isExit)
       {
         ColorTime = new SolidColorBrush(Colors.Black);
-        _notifyIcon.Icon = Properties.Resources.clock;
+        _notifyIcon.Icon = Resources.clock;
       }
+
       RaisePropertyChanged("ColorTime");
     }
 
     private void ShowPopUpDialog(TimeSpan timeToGo, TimeSpan timeToGoMaximum)
     {
-      if ((timeToGo.TotalSeconds > 13 && timeToGo.TotalSeconds < 16) || (timeToGoMaximum.TotalSeconds > 13 && timeToGoMaximum.TotalSeconds < 16))
+      if ((!(timeToGo.TotalSeconds > 13) || !(timeToGo.TotalSeconds < 16)) &&
+          (!(timeToGoMaximum.TotalSeconds > 13) || !(timeToGoMaximum.TotalSeconds < 16))) return;
+      var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow"));
+      if (wnd != null) return;
+      var popUpWindow = new PopUpWindow
       {
-        var wnd = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.Name.Contains("PopUpWindow"));
-        if (wnd == null)
-        {
-          var win = new PopUpWindow
-          {
-            Name = "PopUpWindow",
-            DataContext = this
-          };
-          win.Show();
-          win.BringIntoView();
-        }
-      }
+        Name = "PopUpWindow",
+        DataContext = this
+      };
+      popUpWindow.Show();
+      popUpWindow.BringIntoView();
     }
 
     private void CreateContextMenu()
     {
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-      var menuItem = new ToolStripMenuItem("Maximize", Properties.Resources.maximize, (s, e) => ShowMainWindow());
+      var menuItem = new ToolStripMenuItem("Maximize", Resources.maximize, (s, e) => ShowMainWindow());
       _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
-      menuItem = new ToolStripMenuItem("Minimize", Properties.Resources.minimize, (s, e) => MinimizeWindow());
+      menuItem = new ToolStripMenuItem("Minimize", Resources.minimize, (s, e) => MinimizeWindow());
       _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
       _notifyIcon.ContextMenuStrip.Items.Add("-");
-      menuItem = new ToolStripMenuItem("Hide", Properties.Resources.hide, (s, e) => _currentWindow.Hide());
+      menuItem = new ToolStripMenuItem("Hide", Resources.hide, (s, e) => _currentWindow.Hide());
       _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
-      menuItem = new ToolStripMenuItem("Exit", Properties.Resources.close, (s, e) => ExitApplication());
+      menuItem = new ToolStripMenuItem("Exit", Resources.close, (s, e) => ExitApplication());
       _notifyIcon.ContextMenuStrip.Items.Add(menuItem);
     }
 
@@ -549,50 +642,26 @@ namespace JobTimeTracker.ViewModel
       _currentWindow.WindowState = WindowState.Normal;
     }
 
-    private void InitGeneralSettings()
-    {
-      LoadCSVOnDataGridView(TimeLogFileLocation);
-      var startTime = GetFirstLoginToMachine();
-      StartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day, startTime.Hour, startTime.Minute, startTime.Second);
-      StartTimer();
-      RemainingTimerToGo();
-      ChargeSoundFiles();
-      TimerWarning();
-      TimerAlert();
-      CmdTrackTimeExecute();
-
-      CmdOpenLoggingFileLocation = new RelayCommand(CmdOpenLoggingFileLocationExecute);
-      CmdExtraTime = new RelayCommand(CmdExtraTimeExecute);
-      CmdAddSounds = new RelayCommand(CmdAddSoundsExecute);
-      CmdTrackTime = new RelayCommand(CmdTrackTimeExecute);
-      CmdEditMail = new RelayCommand(CmdEditMailExecute);
-      CmdReset = new RelayCommand(CmdResetExecute);
-      CmdDeactivate = new RelayCommand(CmdDeactivateExecute);
-      CmdLanguage = new RelayCommand(CmdLanguageExecute);
-      CmdAbout = new RelayCommand(CmdAboutExecute);
-    }
-
     private void ChargeSoundFiles()
     {
       SoundsDict = new Dictionary<string, string>();
       SoundsList = new List<string>();
       var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.SoundPath);
-      if (!Directory.Exists(path))
-      {
-        Directory.CreateDirectory(path);
-      }
+      if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
       using (Stream output = File.OpenWrite($"{path}\\Trumpet.wav"))
       {
-        Properties.Resources.Trumpet.CopyTo(output);
+        Resources.Trumpet.CopyTo(output);
       }
+
       using (Stream output = File.OpenWrite($"{path}\\KLAXXON.wav"))
       {
-        Properties.Resources.KLAXXON.CopyTo(output);
+        Resources.KLAXXON.CopyTo(output);
       }
+
       using (Stream output = File.OpenWrite($"{path}\\RunForrest.wav"))
       {
-        Properties.Resources.RunForrest.CopyTo(output);
+        Resources.RunForrest.CopyTo(output);
       }
 
       var files = Directory.GetFiles(path, "*.wav");
@@ -610,7 +679,7 @@ namespace JobTimeTracker.ViewModel
 
     private static void ActivateAlarm(string soundPath)
     {
-      var soundPlayer = new SoundPlayer { SoundLocation = soundPath };
+      var soundPlayer = new SoundPlayer {SoundLocation = soundPath};
       soundPlayer.Play();
     }
 
@@ -657,8 +726,9 @@ namespace JobTimeTracker.ViewModel
 
         var extraTime = _timeNow - _regularEndTime;
         var sign = extraTime < TimeSpan.Zero ? "-" : "";
-        var timeExtra = $"{sign}{Math.Abs(extraTime.Hours):00}:{Math.Abs(extraTime.Minutes):00}:{Math.Abs(extraTime.Seconds):00}";
-        
+        var timeExtra =
+          $"{sign}{Math.Abs(extraTime.Hours):00}:{Math.Abs(extraTime.Minutes):00}:{Math.Abs(extraTime.Seconds):00}";
+
         _extraTimeWorked = TimeSpan.Zero;
 
         var columnNames = DataCsv.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -668,15 +738,13 @@ namespace JobTimeTracker.ViewModel
           var fields = row.ItemArray.Select(field => field.ToString());
           var enumerable = fields as string[] ?? fields.ToArray();
           var fieldLine = string.Join(",", enumerable);
-          if (((!fieldLine.Contains(todayDate)) && DateTime.TryParse(enumerable.ElementAt(1), out var dateValue)) ||
-              (fieldLine.Contains(todayDate) && DateTime.TryParse(enumerable.ElementAt(1), out dateValue) && (dateValue.Hour > 1) && ((_startTime - dateValue) > (_timeLunchBreak + _timeAlert))))
-          {
+          if (!fieldLine.Contains(todayDate) && DateTime.TryParse(enumerable.ElementAt(1), out var dateValue) ||
+              fieldLine.Contains(todayDate) && DateTime.TryParse(enumerable.ElementAt(1), out dateValue) &&
+              dateValue.Hour > 1 && _startTime - dateValue > _timeLunchBreak + _timeAlert)
             csv.AppendLine(fieldLine);
-          }
-          else if (DateTime.TryParse(enumerable.First(), out dateValue) && DateTime.TryParse(enumerable.ElementAt(1), out dateValue) && string.IsNullOrEmpty(remark))
-          {
-            remark = enumerable.Last();
-          }
+          else if (DateTime.TryParse(enumerable.First(), out dateValue) &&
+                   DateTime.TryParse(enumerable.ElementAt(1), out dateValue) &&
+                   string.IsNullOrEmpty(remark)) remark = enumerable.Last();
 
           _extraTimeWorked += TimeSpan.Parse(enumerable[3]);
         }
@@ -700,7 +768,7 @@ namespace JobTimeTracker.ViewModel
       if (Directory.Exists(fileInfo.DirectoryName) && File.Exists(fileInfo.ToString())) return;
       Directory.CreateDirectory(fileInfo.DirectoryName ?? throw new InvalidOperationException());
       File.Create(path).Dispose();
-      
+
       var line = new StringBuilder();
       line.AppendLine("Date,Start,End,Extra time,Remark (!only one line!)");
       File.WriteAllText(path, line.ToString());
@@ -710,7 +778,7 @@ namespace JobTimeTracker.ViewModel
     {
       try
       {
-        if (!File.Exists(fileName) || (fileName == null))
+        if (!File.Exists(fileName) || fileName == null)
         {
           fileName = TimeLoggingFile;
           EnsureDirectory(fileName);
